@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>토스페이 광고주 모니터링 대시보드 (데모) · 윤지욱</title>
-<meta name="description" content="토스페이 광고주·구좌별 노출·CTR·CPC·CVR·CPM·CPA를 기간 비교하고, 캠페인→광고세트→소재 드릴다운, 광고주별 KPI·메모 히스토리와 엑셀 리포트까지 관리하는 토스페이 AM 모니터링 대시보드 데모." />
+<title>광고 성과 모니터링 대시보드 (데모) · 윤지욱</title>
+<meta name="description" content="다매체 광고 캠페인 성과(노출·CTR·CPC·CVR·CPA)를 기간 비교·드릴다운하고 KPI·메모·리포트까지 관리하는 퍼포먼스 마케팅 모니터링 대시보드 데모." />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard.css');
@@ -131,21 +131,21 @@
 <nav style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);-webkit-backdrop-filter:saturate(180%) blur(12px);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid #E5E8EB">
   <div style="max-width:1040px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:'Pretendard',-apple-system,system-ui,sans-serif">
     <a href="index.html" style="font-weight:800;font-size:17px;color:#191F28;text-decoration:none;letter-spacing:-.02em;white-space:nowrap">JIUK<span style="color:#3182F6">.</span>YOON</a>
-    <div style="display:flex;gap:2px;align-items:center;font-size:14.5px;flex-wrap:wrap;justify-content:flex-end"><a href="index.html" style="color:#4E5968;text-decoration:none;font-weight:600;padding:8px 12px;border-radius:10px">Home</a><a href="portfolio.html" style="color:#4E5968;text-decoration:none;font-weight:600;padding:8px 12px;border-radius:10px">Portfolio</a><a href="resume.html" style="color:#4E5968;text-decoration:none;font-weight:600;padding:8px 12px;border-radius:10px">이력서</a><a href="dashboard.html" style="color:#3182F6;text-decoration:none;font-weight:800;padding:8px 12px;border-radius:10px;background:#EAF2FE">광고주 대시보드</a></div>
+    <div style="display:flex;gap:2px;align-items:center;font-size:14.5px;flex-wrap:wrap;justify-content:flex-end"><a href="index.html" style="color:#4E5968;text-decoration:none;font-weight:600;padding:8px 12px;border-radius:10px">Home</a><a href="portfolio.html" style="color:#4E5968;text-decoration:none;font-weight:600;padding:8px 12px;border-radius:10px">Portfolio</a><a href="resume.html" style="color:#4E5968;text-decoration:none;font-weight:600;padding:8px 12px;border-radius:10px">이력서</a><a href="dashboard.html" style="color:#3182F6;text-decoration:none;font-weight:800;padding:8px 12px;border-radius:10px;background:#EAF2FE">성과 대시보드</a></div>
   </div>
 </nav>
 
 <div class="wrap">
   <div class="head">
-    <div><h1>토스페이 광고주 모니터링 대시보드</h1>
-      <div class="sub">토스페이 구좌별 성과(노출·CTR·CPC·CVR·CPM·CPA) 기간 비교 + 구좌(쿠폰 광고상품)→광고세트→소재 드릴다운 + KPI·메모 히스토리.</div></div>
+    <div><h1>광고 성과 모니터링 대시보드</h1>
+      <div class="sub">캠페인별 성과(노출·CTR·CPC·CVR·CPM·CPA) 기간 비교 + 캠페인→광고세트→소재 드릴다운 + KPI·메모 히스토리.</div></div>
     <span class="badge-demo">● 데모 · 가상 데이터</span>
   </div>
 
   <div class="tabs">
-    <div class="tab active" data-tab="overview">광고주 대시보드</div>
+    <div class="tab active" data-tab="overview">채널 대시보드</div>
     <div class="tab" data-tab="daily">일자별 성과</div>
-    <div class="tab" data-tab="history">광고주 히스토리</div>
+    <div class="tab" data-tab="history">운영 히스토리</div>
   </div>
 
   <!-- Overview -->
@@ -162,7 +162,7 @@
     <div class="periodinfo" id="periodInfo"></div>
     <div class="sum" id="sum"></div>
     <div class="advhead GRID">
-      <div>광고주 / KPI</div><div>선택 KPI</div><div>노출</div><div>전환</div><div>상태</div><div>메모</div><div></div>
+      <div>채널 / KPI</div><div>선택 KPI</div><div>노출</div><div>전환</div><div>상태</div><div>메모</div><div></div>
     </div>
     <div id="advList"></div>
   </div>
@@ -170,8 +170,8 @@
   <!-- Daily -->
   <div id="daily" class="hide">
     <div class="controls">
-      <div><label>광고주</label><select id="selAdv"></select></div>
-      <div><label>캠페인(구좌)</label><select id="selCamp"></select></div>
+      <div><label>채널</label><select id="selAdv"></select></div>
+      <div><label>캠페인</label><select id="selCamp"></select></div>
       <div><label>광고세트</label><select id="selSet"></select></div>
       <div><label>소재</label><select id="selCr"></select></div>
       <div><label>지표</label><select id="selMetric"></select></div>
@@ -188,17 +188,17 @@
   <!-- History -->
   <div id="history" class="hide">
     <div class="histbar">
-      <div><label style="font-size:12.5px;font-weight:700;color:var(--sub);margin-right:6px;">광고주</label><select id="selHist"></select></div>
+      <div><label style="font-size:12.5px;font-weight:700;color:var(--sub);margin-right:6px;">채널</label><select id="selHist"></select></div>
       <button class="dlbtn" id="dlXls">📥 엑셀 리포트 다운로드</button>
     </div>
-    <div class="histnote">담당자 인수인계용 — 선택한 광고주(또는 전체)의 <b>메모 히스토리를 엑셀(.xls) 리포트로 내보냅니다.</b> 담당자가 바뀌어도 운영 맥락을 그대로 넘겨줄 수 있습니다.</div>
+    <div class="histnote">담당자 인수인계용 — 선택한 채널(또는 전체)의 <b>메모 히스토리를 엑셀(.xls) 리포트로 내보냅니다.</b> 담당자가 바뀌어도 운영 맥락을 그대로 넘겨줄 수 있습니다.</div>
     <div class="histmeta" id="histMeta"></div>
     <div class="dtscroll"><table class="dt" id="histView"></table></div>
   </div>
 
-  <div class="disc">⚠️ 본 대시보드는 <b>윤지욱이 AM 유지 전략을 보여주기 위해 제작한 데모</b>로, 모든 광고주·수치는 <b>가상 데이터</b>입니다. (엑셀 업로드 / 토스페이 광고 API 연동으로 실데이터 수집 가능) · 메모·KPI 설정은 <b>이 브라우저에만 저장</b>됩니다.</div>
+  <div class="disc">⚠️ 본 대시보드는 <b>윤지욱이 퍼포먼스 마케팅 성과 운영을 보여주기 위해 제작한 데모</b>로, 모든 채널·수치는 <b>가상 데이터</b>입니다. (엑셀 업로드 / 광고 API 연동으로 실데이터 수집 가능) · 메모·KPI 설정은 <b>이 브라우저에만 저장</b>됩니다.</div>
   <div class="disc" style="background:#f3f7ff;border-color:#bcd4f5;color:#2f5a9e;">
-    🔒 <b>광고주 데이터 보안 관리 (실제 운영 시)</b> — 데이터 유출 가능성을 원천 차단하기 위해, 대시보드는 <b>담당자 로컬 환경(개인 노트북)에서만 구동</b>(localhost)하며 외부 서버·클라우드에 광고주 데이터를 저장·배포하지 않습니다. API 토큰·인증키는 <code style="background:#e6eefb;padding:1px 5px;border-radius:4px;">.env</code>로 분리해 환경변수로 관리하고, 데이터는 <b>읽기 전용(read-only)</b>·접근 권한 최소화 원칙으로 다룹니다.
+    🔒 <b>광고 데이터 보안 관리 (실제 운영 시)</b> — 데이터 유출 가능성을 원천 차단하기 위해, 대시보드는 <b>담당자 로컬 환경(개인 노트북)에서만 구동</b>(localhost)하며 외부 서버·클라우드에 광고 데이터를 저장·배포하지 않습니다. API 토큰·인증키는 <code style="background:#e6eefb;padding:1px 5px;border-radius:4px;">.env</code>로 분리해 환경변수로 관리하고, 데이터는 <b>읽기 전용(read-only)</b>·접근 권한 최소화 원칙으로 다룹니다.
   </div>
 </div>
 
@@ -206,7 +206,7 @@
 <div id="memoModal" class="modal hide">
   <div class="modal-box">
     <div class="modal-head"><span><span id="memoAdv"></span> · 메모 히스토리</span><span class="x" onclick="closeMemo()">✕</span></div>
-    <textarea id="memoText" placeholder="예: 10/8 전환율 ▼22% — 소재 피로도 의심. A/B 소재 2종 제안 예정. / 다음 주 QBR에서 구좌 확장 논의"></textarea>
+    <textarea id="memoText" placeholder="예: 10/8 전환율 ▼22% — 소재 피로도 의심. A/B 소재 2종 제안 예정. / 다음 주 리뷰에서 예산 확장 논의"></textarea>
     <button class="savebtn" onclick="saveMemo()">메모 저장</button>
     <div id="memoList"></div>
   </div>
@@ -218,73 +218,73 @@ function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15
 function gen(base,drift,dip,seed,noise,rate){const r=mul(seed);const o=[];for(let i=0;i<DAYS;i++){let v=base*(1+drift*(i/(DAYS-1)))*(1+(r()*2-1)*noise);if(dip&&i>=DAYS-7){const t=(i-(DAYS-8))/7;v*=(1-dip*t);}o.push(rate?Math.max(0.0005,v):Math.max(1,Math.round(v)));}return o;}
 const C=(b,dr,dp,s,n=0.07)=>gen(b,dr,dp,s,n,false), R=(b,dr,dp,s,n=0.06)=>gen(b,dr,dp,s,n,true);
 
-// 전부 토스페이 쿠폰 광고 '구좌' · 구좌 > 광고세트 > 소재 계층
+// 셀프스토리지(짐보관) 퍼포먼스 마케팅 채널 · 채널 > 캠페인 > 광고세트 > 소재 계층
 const CFG=[
- {name:'에이블리',cat:'패션 커머스',camps:[
-   {name:'최상단 AD (동영상 쿠폰)',sets:[
-     {name:'45세+ 결제이력',crs:[
-       {name:'15% 쿠폰 소개 15s',imp:C(26000,.12,0,101),ctr:R(.011,.05,0,102),cvr:R(.07,.10,0,103),cpc:R(950,.03,0,104)},
-       {name:'혜택 강조 15s',imp:C(20000,.10,0,105),ctr:R(.012,.04,0,106),cvr:R(.075,.08,0,107),cpc:R(980,.02,0,108)},
+ {name:'Meta Ads',cat:'Facebook·Instagram',camps:[
+   {name:'B2C 짐보관 전환 캠페인',sets:[
+     {name:'직장인 타겟',crs:[
+       {name:'공감형 AI영상 15s',imp:C(26000,.12,0,101),ctr:R(.011,.05,0,102),cvr:R(.07,.10,0,103),cpc:R(950,.03,0,104)},
+       {name:'가격강조 이미지',imp:C(20000,.10,0,105),ctr:R(.012,.04,0,106),cvr:R(.075,.08,0,107),cpc:R(980,.02,0,108)},
      ]},
-     {name:'결제이력 리타겟',crs:[
-       {name:'재구매 유도 10s',imp:C(16000,.08,0,109),ctr:R(.013,.03,0,110),cvr:R(.085,.06,0,111),cpc:R(1020,0,0,112)},
-     ]},
-   ]},
-   {name:'오늘딜 쿠폰',sets:[
-     {name:'전체 노출',crs:[
-       {name:'오늘딜 배너 A',imp:C(17000,.05,0,113),ctr:R(.013,0,0,114),cvr:R(.09,.06,0,115),cpc:R(1100,.02,0,116)},
-       {name:'오늘딜 배너 B',imp:C(13000,.04,0,117),ctr:R(.012,0,0,118),cvr:R(.082,.05,0,119),cpc:R(1050,0,0,120)},
+     {name:'리타겟',crs:[
+       {name:'리뷰 기반 영상',imp:C(16000,.08,0,109),ctr:R(.013,.03,0,110),cvr:R(.085,.06,0,111),cpc:R(1020,0,0,112)},
      ]},
    ]},
-   {name:'기본딜 쿠폰',sets:[
+   {name:'리마케팅 캠페인',sets:[
      {name:'전체 노출',crs:[
-       {name:'상시 쿠폰 배너',imp:C(45000,.03,0,121),ctr:R(.010,0,0,122),cvr:R(.06,0,0,123),cpc:R(820,0,0,124)},
+       {name:'한정 프로모션 배너 A',imp:C(17000,.05,0,113),ctr:R(.013,0,0,114),cvr:R(.09,.06,0,115),cpc:R(1100,.02,0,116)},
+       {name:'한정 프로모션 배너 B',imp:C(13000,.04,0,117),ctr:R(.012,0,0,118),cvr:R(.082,.05,0,119),cpc:R(1050,0,0,120)},
      ]},
    ]},
- ]},
- {name:'올리브영',cat:'뷰티 커머스',camps:[
-   {name:'오늘딜 쿠폰',sets:[
+   {name:'브랜드 인지 캠페인',sets:[
      {name:'전체 노출',crs:[
-       {name:'뷰티 쿠폰 티저',imp:C(32000,0,0,201),ctr:R(.009,0,0,202),cvr:R(.06,0,.42,203),cpc:R(700,0,.1,204)},
-       {name:'할인 소구',imp:C(23000,0,0,205),ctr:R(.010,0,0,206),cvr:R(.058,0,.40,207),cpc:R(720,0,.1,208)},
-     ]},
-   ]},
-   {name:'방문미션',sets:[
-     {name:'전체 노출',crs:[
-       {name:'적립 쿠폰 미션',imp:C(35000,-.03,0,209),ctr:R(.010,0,0,210),cvr:R(.055,0,.34,211),cpc:R(760,.04,0,212)},
+       {name:'브랜드 소개 배너',imp:C(45000,.03,0,121),ctr:R(.010,0,0,122),cvr:R(.06,0,0,123),cpc:R(820,0,0,124)},
      ]},
    ]},
  ]},
- {name:'무신사',cat:'패션 커머스',camps:[
-   {name:'최상단 AD',sets:[
+ {name:'Google Ads',cat:'검색·디스플레이',camps:[
+   {name:'B2C 짐보관 전환 캠페인',sets:[
      {name:'전체 노출',crs:[
-       {name:'시즌 컬렉션 쿠폰',imp:C(52000,.10,0,301),ctr:R(.013,.04,0,302),cvr:R(.05,.08,0,303),cpc:R(520,0,0,304)},
-       {name:'베스트 상품 쿠폰',imp:C(38000,.09,0,305),ctr:R(.012,.03,0,306),cvr:R(.048,.07,0,307),cpc:R(540,0,0,308)},
+       {name:'문제제시형 15s',imp:C(32000,0,0,201),ctr:R(.009,0,0,202),cvr:R(.06,0,.42,203),cpc:R(700,0,.1,204)},
+       {name:'가격강조 이미지',imp:C(23000,0,0,205),ctr:R(.010,0,0,206),cvr:R(.058,0,.40,207),cpc:R(720,0,.1,208)},
      ]},
    ]},
-   {name:'오늘딜 쿠폰',sets:[
+   {name:'리마케팅 캠페인',sets:[
      {name:'전체 노출',crs:[
-       {name:'기획전 쿠폰 배너',imp:C(60000,.06,0,309),ctr:R(.012,0,0,310),cvr:R(.045,.04,0,311),cpc:R(480,0,0,312)},
+       {name:'재방문 유도 배너',imp:C(35000,-.03,0,209),ctr:R(.010,0,0,210),cvr:R(.055,0,.34,211),cpc:R(760,.04,0,212)},
      ]},
    ]},
  ]},
- {name:'컬리',cat:'식품 커머스',camps:[
-   {name:'최상단 AD (동영상 쿠폰)',sets:[
+ {name:'네이버 GFA',cat:'네이버 성과형',camps:[
+   {name:'B2C 짐보관 전환 캠페인',sets:[
      {name:'전체 노출',crs:[
-       {name:'첫구매 쿠폰 15s',imp:C(70000,0,.48,401),ctr:R(.007,0,0,402),cvr:R(.10,0,0,403),cpc:R(1300,.05,0,404)},
-       {name:'혜택 강조 15s',imp:C(50000,0,.48,405),ctr:R(.0075,0,0,406),cvr:R(.105,0,0,407),cpc:R(1280,.04,0,408)},
+       {name:'공감형 AI영상 15s',imp:C(52000,.10,0,301),ctr:R(.013,.04,0,302),cvr:R(.05,.08,0,303),cpc:R(520,0,0,304)},
+       {name:'리뷰 기반 영상',imp:C(38000,.09,0,305),ctr:R(.012,.03,0,306),cvr:R(.048,.07,0,307),cpc:R(540,0,0,308)},
      ]},
    ]},
-   {name:'상품미션',sets:[
+   {name:'브랜드 인지 캠페인',sets:[
      {name:'전체 노출',crs:[
-       {name:'재구매 쿠폰 미션',imp:C(40000,0,.30,409),ctr:R(.009,0,0,410),cvr:R(.12,0,0,411),cpc:R(1500,0,0,412)},
+       {name:'브랜드 소개 배너',imp:C(60000,.06,0,309),ctr:R(.012,0,0,310),cvr:R(.045,.04,0,311),cpc:R(480,0,0,312)},
+     ]},
+   ]},
+ ]},
+ {name:'가맹 리드(B2B)',cat:'가맹점 모집',camps:[
+   {name:'가맹 리드(B2B) 캠페인',sets:[
+     {name:'임대인 타겟',crs:[
+       {name:'수익모델 소개 15s',imp:C(70000,0,.48,401),ctr:R(.007,0,0,402),cvr:R(.10,0,0,403),cpc:R(1300,.05,0,404)},
+       {name:'창업 혜택 강조 15s',imp:C(50000,0,.48,405),ctr:R(.0075,0,0,406),cvr:R(.105,0,0,407),cpc:R(1280,.04,0,408)},
+     ]},
+   ]},
+   {name:'유사타깃 2% 캠페인',sets:[
+     {name:'전체 노출',crs:[
+       {name:'상담신청 유도 영상',imp:C(40000,0,.30,409),ctr:R(.009,0,0,410),cvr:R(.12,0,0,411),cpc:R(1500,0,0,412)},
      ]},
    ]},
  ]},
 ];
 const DATES=[];{const t=new Date();for(let i=DAYS-1;i>=0;i--){const d=new Date(t);d.setDate(t.getDate()-i);DATES.push({iso:d.toISOString().slice(0,10),label:`${d.getMonth()+1}/${d.getDate()}`});}}
 
-/* 계층 집계: 소재 → 광고세트 → 구좌 → 광고주 */
+/* 계층 집계: 소재 → 광고세트 → 캠페인 → 채널 */
 const aggKids=(kids,k)=>DATES.map((_,i)=>kids.reduce((s,c)=>s+c[k][i],0));
 function finLeaf(c){
   const clicks=c.imp.map((v,i)=>Math.max(1,Math.round(v*c.ctr[i])));
@@ -327,26 +327,26 @@ function isFlag(m,ch){if(ch===null)return false;return MET[m].g==='up'?ch<=-12:(
 function seedMemo(){
   const t=(i,hm)=>{const [y,mo,d]=DATES[i].iso.split('-');return `${y}.${mo}.${d} ${hm}`;};
   return {
-   '에이블리':[
-     {ts:t(DAYS-2,'09:40'),text:'최상단 AD CVR ▼18% (전주比) — 소재 피로 의심. 신규 쿠폰 소재 2종 교체 제안 예정.'},
-     {ts:t(DAYS-6,'14:10'),text:'오늘딜 쿠폰 CPA 안정권 유지. 다음 주 일예산 +15% 증액 논의.'},
-     {ts:t(DAYS-11,'11:05'),text:'월간 리뷰 — 기본딜은 상시 전환, 최상단 AD는 신상품 버스트 중심으로 운영 합의.'},
+   'Meta Ads':[
+     {ts:t(DAYS-2,'09:40'),text:'B2C 전환 캠페인 CVR ▼18% (전주比) — 소재 피로 의심. 신규 소재 2종 교체 제안 예정.'},
+     {ts:t(DAYS-6,'14:10'),text:'리마케팅 캠페인 CPA 안정권 유지. 다음 주 일예산 +15% 증액 논의.'},
+     {ts:t(DAYS-11,'11:05'),text:'월간 리뷰 — 브랜드 인지는 상시 운영, B2C 전환은 프로모션 버스트 중심으로 운영 합의.'},
    ],
-   '올리브영':[
-     {ts:t(DAYS-4,'16:22'),text:'방문미션 CTR 하락 추세 — 결제이력 타겟 A/B 제안.'},
-     {ts:t(DAYS-13,'10:48'),text:'행사 버스트 종료. 상시 전환 구좌(오늘딜 쿠폰)로 예산 이관 완료.'},
+   'Google Ads':[
+     {ts:t(DAYS-4,'16:22'),text:'리마케팅 CTR 하락 추세 — 직장인 타겟 A/B 제안.'},
+     {ts:t(DAYS-13,'10:48'),text:'프로모션 버스트 종료. 상시 전환 캠페인(B2C 짐보관)으로 예산 이관 완료.'},
    ],
-   '무신사':[
-     {ts:t(DAYS-8,'10:30'),text:'최상단 AD 전환 우수 — 예산 비중 확대 제안.'},
+   '네이버 GFA':[
+     {ts:t(DAYS-8,'10:30'),text:'B2C 전환 캠페인 전환 우수 — 예산 비중 확대 제안.'},
    ],
-   '컬리':[
-     {ts:t(DAYS-3,'17:05'),text:'첫구매 쿠폰 CPA 급등 — 최상단 AD 노출 과열. 상품미션으로 일부 예산 분산 제안.'},
+   '가맹 리드(B2B)':[
+     {ts:t(DAYS-3,'17:05'),text:'가맹 리드 CPA 급등 — 임대인 타겟 노출 과열. 유사타깃 2%로 일부 예산 분산 제안.'},
    ],
   };
 }
 
 /* 저장 (최초 1회 시드) */
-const KPI=JSON.parse(localStorage.getItem('amdemo_kpi')||'null')||{'에이블리':'cpa','컬리':'cpa'};
+const KPI=JSON.parse(localStorage.getItem('amdemo_kpi')||'null')||{'Meta Ads':'cpa','가맹 리드(B2B)':'cpa'};
 const MEMO=JSON.parse(localStorage.getItem('amdemo_memo')||'null')||seedMemo();
 const saveKPI=()=>localStorage.setItem('amdemo_kpi',JSON.stringify(KPI));
 const saveMemoLS=()=>localStorage.setItem('amdemo_memo',JSON.stringify(MEMO));
@@ -387,9 +387,9 @@ function renderOverview(){
     const opts=MKEYS.map(m=>`<option value="${m}" ${m===kpi?'selected':''}>${MET[m].l}</option>`).join('');
     const mc=(MEMO[a.name]||[]).length;
     const chips=a.camps.map(c=>`<span>${c.name}</span>`).join('');
-    // 구좌(캠페인) 지표 테이블 — 비교 시 전주(위)/이번주(아래) 2행
+    // 캠페인 지표 테이블 — 비교 시 전주(위)/이번주(아래) 2행
     const cols=['imp','clicks','ctr','cvr','conv','cpc','cpm','cpa'];
-    const thead=`<tr><th>구좌(캠페인)</th><th>기간</th>${cols.map(m=>`<th>${MET[m].l}</th>`).join('')}</tr>`;
+    const thead=`<tr><th>캠페인</th><th>기간</th>${cols.map(m=>`<th>${MET[m].l}</th>`).join('')}</tr>`;
     const valTds=(c,s,e,base)=>cols.map(m=>{const cur=mval(c,m,s,e);
       if(!base)return `<td><div class="mv">${mfmt(m,cur)}</div></td>`;
       const prev=mval(c,m,base.s,base.e);const ch=change(cur,prev);
@@ -402,7 +402,7 @@ function renderOverview(){
     const foot=ps===null?'※ 비교 기간을 설정하면 전주(위)·이번주(아래) 2행으로 변화율까지 표시됩니다.':'※ 전주(위) → 이번주(아래) 순 · 이번주 셀 아래 숫자는 전주 대비 변화율';
     return `<div class="adv ${flagged?'flag':''}">
       <div class="adv-top GRID" onclick="this.parentNode.classList.toggle('open')">
-        <div class="advc0"><div class="adv-name">${a.name}</div><div class="adv-cat">${a.cat} · 운영 구좌 ${a.camps.length}개</div>
+        <div class="advc0"><div class="adv-name">${a.name}</div><div class="adv-cat">${a.cat} · 운영 캠페인 ${a.camps.length}개</div>
           <div class="kpiwrap"><span class="kpilbl">KPI</span><select class="kpisel" onclick="event.stopPropagation()" onchange="setKPI('${a.name}',this.value)">${opts}</select></div>
           <div class="gchips">${chips}</div></div>
         ${cellK}${cellS(imp,'imp')}${cellS(conv,'conv')}
@@ -416,9 +416,9 @@ function renderOverview(){
   }).join('');
   document.getElementById('advList').innerHTML=rows;
   document.getElementById('sum').innerHTML=
-    `<div class="sumc"><div class="n">${DATA.length}</div><div class="l">관리 광고주</div></div>
+    `<div class="sumc"><div class="n">${DATA.length}</div><div class="l">운영 채널</div></div>
      <div class="sumc"><div class="n ${flags?'warn':''}">${flags}</div><div class="l">⚠ 주의 필요 (KPI 악화)</div></div>
-     <div class="sumc"><div class="n">${DATA.reduce((s,a)=>s+a.camps.length,0)}</div><div class="l">총 운영 구좌</div></div>`;
+     <div class="sumc"><div class="n">${DATA.reduce((s,a)=>s+a.camps.length,0)}</div><div class="l">총 운영 캠페인</div></div>`;
 }
 
 /* 메모 */
@@ -441,7 +441,7 @@ function dseries(o,m){return DATES.map((_,i)=>{switch(m){case 'imp':case 'clicks
 function fillSel(elm,items,allLabel){elm.innerHTML=`<option value="">${allLabel}</option>`+items.map((it,i)=>`<option value="${i}">${it.name}</option>`).join('');}
 function syncDailySelectors(level){
   const a=DATA[+el('selAdv').value];
-  if(level<=1){fillSel(el('selCamp'),a.camps,'전체 구좌'); el('selCamp').value='';}
+  if(level<=1){fillSel(el('selCamp'),a.camps,'전체 캠페인'); el('selCamp').value='';}
   const c=el('selCamp').value!==''?a.camps[+el('selCamp').value]:null;
   if(level<=2){ if(c){fillSel(el('selSet'),c.sets,'전체 광고세트'); el('selSet').disabled=false;} else {el('selSet').innerHTML='<option value="">전체 광고세트</option>'; el('selSet').disabled=true;} el('selSet').value=''; }
   const s=(c&&el('selSet').value!=='')?c.sets[+el('selSet').value]:null;
@@ -487,7 +487,7 @@ function renderDaily(){
   el('dtable').innerHTML=rows;
 }
 
-/* 광고주 히스토리 + 엑셀 리포트 */
+/* 운영 히스토리 + 엑셀 리포트 */
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,' ');
 function histItems(sel){
   const advs = sel==='__all__' ? DATA.map(a=>a.name) : [sel];
@@ -497,27 +497,27 @@ function histItems(sel){
 function renderHistory(){
   const sel=el('selHist').value;
   const items=histItems(sel).sort((a,b)=>a.ts<b.ts?1:-1); // 최신순
-  const title=sel==='__all__'?'전체 광고주':sel;
+  const title=sel==='__all__'?'전체 채널':sel;
   el('histMeta').innerHTML=
     `<div class="sumc"><div class="n">${title}</div><div class="l">조회 대상</div></div>
      <div class="sumc"><div class="n">${items.length}</div><div class="l">누적 메모</div></div>
      <div class="sumc"><div class="n">${items[items.length-1]?items[items.length-1].ts.slice(0,10):'–'}</div><div class="l">최초 기록</div></div>`;
   const rows=items.length?items.map(it=>`<tr><td>${it.ts}</td><td>${esc(it.adv)}</td><td class="htext">${esc(it.text)}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">메모 히스토리가 없습니다.</td></tr>';
-  el('histView').innerHTML=`<tr><th>작성일시</th><th>광고주</th><th>메모(히스토리)</th></tr>${rows}`;
+  el('histView').innerHTML=`<tr><th>작성일시</th><th>채널</th><th>메모(히스토리)</th></tr>${rows}`;
 }
 window.downloadXls=()=>{
-  const sel=el('selHist').value, title=sel==='__all__'?'전체 광고주':sel;
+  const sel=el('selHist').value, title=sel==='__all__'?'전체 채널':sel;
   const items=histItems(sel).sort((a,b)=>a.ts<b.ts?-1:1); // 리포트는 오래된 순(타임라인)
   const d=new Date(); const td=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
   const body=items.length?items.map((it,i)=>`<tr><td>${i+1}</td><td>${it.ts}</td><td>${esc(it.adv)}</td><td>${esc(it.text)}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center">메모 없음</td></tr>';
   const html=`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body>`+
     `<table border="1" cellspacing="0" cellpadding="4">`+
-    `<tr><td colspan="4" style="font-weight:bold;font-size:14px;background:#fff2ea">광고주 운영 히스토리 리포트 — ${esc(title)}</td></tr>`+
-    `<tr><td colspan="4">발행일 ${td} · 담당자 윤지욱 · 출처 AM 모니터링 대시보드 (인수인계용)</td></tr>`+
-    `<tr style="background:#f1f3f6;font-weight:bold"><td>번호</td><td>작성일시</td><td>광고주</td><td>메모(히스토리)</td></tr>${body}</table></body></html>`;
+    `<tr><td colspan="4" style="font-weight:bold;font-size:14px;background:#fff2ea">광고 운영 히스토리 리포트 — ${esc(title)}</td></tr>`+
+    `<tr><td colspan="4">발행일 ${td} · 담당자 윤지욱 · 출처 광고 성과 모니터링 대시보드 (인수인계용)</td></tr>`+
+    `<tr style="background:#f1f3f6;font-weight:bold"><td>번호</td><td>작성일시</td><td>채널</td><td>메모(히스토리)</td></tr>${body}</table></body></html>`;
   const blob=new Blob(['﻿'+html],{type:'application/vnd.ms-excel;charset=utf-8'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url; a.download=`광고주히스토리_${title}_${td}.xls`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  a.href=url; a.download=`광고운영히스토리_${title}_${td}.xls`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 };
 
 /* init */
@@ -549,7 +549,7 @@ document.querySelectorAll('#dqseg button').forEach(b=>b.onclick=()=>{const r=+b.
 ['selCr','selMetric'].forEach(id=>el(id).onchange=renderDaily);
 
 // history select
-el('selHist').innerHTML=`<option value="__all__">전체 광고주</option>`+DATA.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
+el('selHist').innerHTML=`<option value="__all__">전체 채널</option>`+DATA.map(a=>`<option value="${a.name}">${a.name}</option>`).join('');
 el('selHist').onchange=renderHistory;
 el('dlXls').onclick=downloadXls;
 
