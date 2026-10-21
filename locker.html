@@ -87,6 +87,15 @@
   .matrix td:first-child, .matrix th:first-child{ text-align:left; font-weight:800; background:#FAFBFC; }
   .matrix .pc{ display:inline-block; min-width:52px; font-weight:800; border-radius:7px; padding:4px 8px; }
   .matrix tr:last-child td{ font-weight:800; }
+  .matrix .delta{ display:block; font-size:10px; font-weight:700; margin-top:1px; }
+  .modeseg{ display:inline-flex; background:#F2F4F6; border-radius:10px; padding:3px; }
+  .modeseg .seg{ font-family:inherit; font-size:13px; font-weight:800; color:var(--sub); background:transparent; border:0; padding:7px 15px; border-radius:8px; cursor:pointer; }
+  .modeseg .seg.on{ background:#fff; color:var(--blue); box-shadow:0 1px 5px rgba(0,0,0,.09); }
+  .datectl{ font-size:13px; font-weight:700; color:var(--sub); display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .datectl input[type=date]{ font-family:inherit; font-size:13.5px; font-weight:700; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 11px; background:#fff; cursor:pointer; }
+  .datectl input[type=date]:focus{ outline:0; border-color:var(--blue); box-shadow:0 0 0 3px rgba(49,130,246,.12); }
+  .datectl .vs{ color:var(--sub2); font-weight:800; }
+  .badge2{ width:22px; height:22px; border-radius:7px; background:var(--blue); color:#fff; font-size:12px; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto; }
 
   .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
   .kpi{ border:1px solid var(--line); border-radius:14px; padding:15px 16px; background:#fff; }
@@ -187,7 +196,7 @@
   <div class="panel on" id="t1">
     <div class="toolbar">
       <div class="note">입력값을 바꾸면 실시간 계산 · 현재 구성·지표를 엑셀로 내보낼 수 있습니다</div>
-      <button class="dlbtn" onclick="exportTab1()">📥 엑셀 다운로드</button>
+      <button class="dlbtn" onclick="exportTab1()">↓ 엑셀 다운로드</button>
     </div>
     <div class="card">
       <div class="ctitle"><span class="n">1</span>기본 입력 <span class="tip">공간·비용 조건</span></div>
@@ -208,7 +217,7 @@
         <tbody id="sz2body"></tbody>
         <tr class="tot"><td>합계</td><td>—</td><td>—</td><td id="t2Area">—</td><td id="t2Cnt">—</td><td id="t2Occ">—</td><td>—</td><td class="rec" id="t2Note">추천 적용 중</td><td id="t2Cap">—</td></tr>
       </table>
-      <div class="szhint">💡 추천 단가는 <b>면적에 비례</b>하게 자동 산출됩니다 — 모든 락커가 <b>70% 찼을 때 매출 = 월세 × 2</b>가 되도록 역산. 단가를 직접 바꾸면 그 값으로 매출이 다시 계산됩니다. <span id="reset2w" style="display:none"><a href="#" id="reset2" style="color:var(--blue);font-weight:800;text-decoration:underline">추천값으로 리셋</a></span></div>
+      <div class="szhint">※ 추천 단가는 <b>면적에 비례</b>하게 자동 산출됩니다 — 모든 락커가 <b>70% 찼을 때 매출 = 월세 × 2</b>가 되도록 역산. 단가를 직접 바꾸면 그 값으로 매출이 다시 계산됩니다. <span id="reset2w" style="display:none"><a href="#" id="reset2" style="color:var(--blue);font-weight:800;text-decoration:underline">추천값으로 리셋</a></span></div>
     </div>
 
     <!-- 3. 할인가 구성 -->
@@ -226,7 +235,7 @@
         <tbody id="sz3body"></tbody>
         <tr class="tot"><td>합계</td><td>—</td><td>—</td><td id="t3Area">—</td><td id="t3Cnt">—</td><td id="t3Occ">—</td><td>—</td><td class="dinp">—</td><td>—</td><td id="t3Cap">—</td></tr>
       </table>
-      <div class="szhint">💡 신규 고객·프로모션용 <b>할인가 시나리오</b>입니다. 정가는 추천값(70%=월세 2배)으로 시작하며, <b>사이즈별 할인율</b>을 넣으면 할인 적용가·할인 기준 매출이 계산됩니다. 이 구성을 체크하면 하단 지표가 <b>할인가 기준</b>으로 바뀝니다.</div>
+      <div class="szhint">※ 신규 고객·프로모션용 <b>할인가 시나리오</b>입니다. 정가는 추천값(70%=월세 2배)으로 시작하며, <b>사이즈별 할인율</b>을 넣으면 할인 적용가·할인 기준 매출이 계산됩니다. 이 구성을 체크하면 하단 지표가 <b>할인가 기준</b>으로 바뀝니다.</div>
     </div>
 
     <div class="card">
@@ -264,12 +273,15 @@
   <!-- ===== TAB 2 ===== -->
   <div class="panel" id="t2">
     <div class="toolbar">
-      <div class="periodsel">📅 조회 기간 <select id="month"></select></div>
-      <button class="dlbtn" onclick="exportTab2()">📥 엑셀 다운로드</button>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <div class="modeseg"><button class="seg on" data-mode="single">단일 조회</button><button class="seg" data-mode="compare">기간 비교</button></div>
+        <div class="datectl"><span id="lblA">조회일</span> <input type="date" id="dateA"><span id="compExtra" style="display:none"> <span class="vs">→</span> 비교일 <input type="date" id="dateB"></span></div>
+      </div>
+      <button class="dlbtn" onclick="exportTab2()">↓ 엑셀 다운로드</button>
     </div>
     <div class="sumgrid" id="sumgrid"></div>
     <div class="card" style="margin-bottom:16px">
-      <div class="ctitle">📊 사이즈별 × 지점별 점유율 비교 <span class="tip" id="matTip"></span></div>
+      <div class="ctitle"><span class="badge2">▦</span>사이즈별 × 지점별 점유율 <span class="tip" id="matTip"></span></div>
       <table class="matrix" id="matrix"></table>
       <div class="legend" style="margin-top:11px">
         <span><span class="dot" style="background:var(--ok)"></span>70%+ 순수익</span>
@@ -285,7 +297,7 @@
     <div id="branches" style="margin-top:12px"></div>
   </div>
 
-  <div class="disc">⚠️ 본 대시보드는 <b>윤지욱이 셀프스토리지(공간 임대) 도메인 이해를 보여주기 위해 제작한 데모</b>입니다. '70% = 월세 2배' 설계 룰은 박스풀 재직 시 <b>라커 점유율에 가격을 연동</b>한 경험을 일반화한 것이며, Tab②의 지점 데이터는 가상값입니다. 입력값을 바꾸면 결과가 실시간으로 재계산됩니다.</div>
+  <div class="disc">※ 본 대시보드는 <b>윤지욱이 셀프스토리지(공간 임대) 도메인 이해를 보여주기 위해 제작한 데모</b>입니다. '70% = 월세 2배' 설계 룰은 박스풀 재직 시 <b>라커 점유율에 가격을 연동</b>한 경험을 일반화한 것이며, Tab②의 지점 데이터는 가상값입니다. 입력값을 바꾸면 결과가 실시간으로 재계산됩니다.</div>
 </div>
 
 <script>
@@ -501,9 +513,8 @@ $('reset2').onclick=(e)=>{ e.preventDefault(); sizes2.forEach(z=>z.price=null); 
 
 compute();
 
-/* ===== TAB 2 : 지점별 락커 점유 현황 (기간별) ===== */
+/* ===== TAB 2 : 지점별 락커 점유 현황 (일별 + 기간 비교) ===== */
 const P={소:27000,중:66000,대:177000};
-const MONTHS=['2026.05','2026.06','2026.07','2026.08','2026.09','2026.10'];
 const SZN=['소형','중형','대형'];
 const branches=[
   {name:'A지점',sizes:[{n:'소형',total:46,occ:[36,38,39,40,41,40]},{n:'중형',total:28,occ:[22,23,23,24,24,24]},{n:'대형',total:14,occ:[10,11,11,12,12,12]}]},
@@ -512,58 +523,103 @@ const branches=[
   {name:'D지점',sizes:[{n:'소형',total:40,occ:[34,35,36,36,37,37]},{n:'중형',total:26,occ:[22,22,23,23,24,24]},{n:'대형',total:12,occ:[9,10,10,11,11,11]}]},
   {name:'E지점',sizes:[{n:'소형',total:48,occ:[14,17,19,21,23,24]},{n:'중형',total:30,occ:[7,9,10,11,12,13]},{n:'대형',total:12,occ:[2,2,3,3,4,4]}]},
 ];
+branches.forEach((b,bi)=>b.sizes.forEach((z,si)=>z._s=bi*3+si+1));
 const pOf=n=>n.startsWith('소')?P.소:n.startsWith('중')?P.중:P.대;
 const occColor=p=>p>=70?'var(--ok)':p>=50?'#D97706':'var(--bad)';
 const occBg=p=>p>=70?'var(--okbg)':p>=50?'var(--warnbg)':'var(--badbg)';
-let mi = MONTHS.length-1;
+const DAY=86400000, START=Date.UTC(2026,4,1), END=Date.UTC(2026,9,31);
+const pad=n=>String(n).padStart(2,'0');
+const toStr=ms=>{const d=new Date(ms);return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`;};
+const toMs=s=>{const[y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d);};
+const dl=ms=>{const d=new Date(ms);return `${d.getUTCFullYear()}.${pad(d.getUTCMonth()+1)}.${pad(d.getUTCDate())}`;};
+const clampMs=ms=>Math.max(START,Math.min(END,ms));
+const sign=v=>v>=0?'+':'';
+function noise(s){const x=Math.sin(s*12.9898+78.233)*43758.5453;return((x-Math.floor(x))-0.5)*3;}
+function occDay(z,ms){const d=new Date(ms),mon=d.getUTCMonth(),mi=Math.max(0,Math.min(5,mon-4)),
+  dim=new Date(Date.UTC(d.getUTCFullYear(),mon+1,0)).getUTCDate(),fr=(d.getUTCDate()-1)/Math.max(1,dim-1),
+  v=z.occ[mi]+(z.occ[Math.min(5,mi+1)]-z.occ[mi])*fr+noise(Math.round(ms/DAY)+z._s*131);
+  return Math.max(0,Math.min(z.total,Math.round(v)));}
+function sizeDay(z,ms){const o=occDay(z,ms);return {total:z.total,occ:o,pct:z.total?o/z.total*100:0,rev:o*pOf(z.n)};}
+function brDay(b,ms){let t=0,o=0,r=0;b.sizes.forEach(z=>{const s=sizeDay(z,ms);t+=s.total;o+=s.occ;r+=s.rev;});return{total:t,occ:o,rev:r,pct:t?o/t*100:0};}
+function allDay(ms){let t=0,o=0,r=0;branches.forEach(b=>{const d=brDay(b,ms);t+=d.total;o+=d.occ;r+=d.rev;});return{total:t,occ:o,rev:r,pct:t?o/t*100:0};}
 
-function sizeAt(z,m){ const o=z.occ[m]||0; return {total:z.total, occ:o, pct:z.total?o/z.total*100:0, rev:o*pOf(z.n)}; }
-function brAt(b,m){ let t=0,o=0,r=0; b.sizes.forEach(z=>{const s=sizeAt(z,m); t+=s.total;o+=s.occ;r+=s.rev;}); return {total:t,occ:o,rev:r,pct:t?o/t*100:0}; }
-function allAt(m){ let t=0,o=0,r=0; branches.forEach(b=>{const d=brAt(b,m); t+=d.total;o+=d.occ;r+=d.rev;}); return {total:t,occ:o,rev:r,pct:t?o/t*100:0}; }
+let t2mode='single', dA=END, dB=clampMs(END-30*DAY);
+$('dateA').min=toStr(START);$('dateA').max=toStr(END);$('dateA').value=toStr(dA);
+$('dateB').min=toStr(START);$('dateB').max=toStr(END);$('dateB').value=toStr(dB);
+$('dateA').onchange=()=>{dA=clampMs(toMs($('dateA').value));$('dateA').value=toStr(dA);renderT2();};
+$('dateB').onchange=()=>{dB=clampMs(toMs($('dateB').value));$('dateB').value=toStr(dB);renderT2();};
+document.querySelectorAll('.modeseg .seg').forEach(s=>s.onclick=()=>{
+  t2mode=s.dataset.mode;
+  document.querySelectorAll('.modeseg .seg').forEach(x=>x.classList.toggle('on',x===s));
+  // 모드별 기본 날짜 세팅 — 단일=최신일, 비교=기준(과거)→비교(현재) 로 시간 순방향
+  if(t2mode==='compare'){ dA=clampMs(END-30*DAY); dB=END; }
+  else { dA=END; }
+  $('dateA').value=toStr(dA); $('dateB').value=toStr(dB);
+  $('compExtra').style.display=t2mode==='compare'?'inline':'none';
+  $('lblA').textContent=t2mode==='compare'?'기준일':'조회일';
+  renderT2();
+});
 
-$('month').innerHTML = MONTHS.map((m,i)=>`<option value="${i}" ${i===mi?'selected':''}>${m}</option>`).join('');
-$('month').onchange = ()=>{ mi=+$('month').value; renderT2(); };
-
+function cardHTML(cards){ $('sumgrid').innerHTML=cards.map(c=>`<div class="scard"><div class="l">${c.l}</div><div class="v" style="${c.c?`color:${c.c}`:''}">${c.v}</div><div class="d ${c.cls||''}">${c.d}</div></div>`).join(''); }
 function renderSummary(){
-  const now=allAt(mi), prev=mi>0?allAt(mi-1):null, mom=prev&&prev.rev?(now.rev-prev.rev)/prev.rev*100:0;
-  const cards=[
-    {l:'운영 지점',v:branches.length+'개',d:'A ~ E지점'},
-    {l:'총 락커 수',v:now.total.toLocaleString()+'개',d:`점유 ${now.occ.toLocaleString()}개`},
-    {l:'평균 점유율',v:now.pct.toFixed(1)+'%',d:now.pct>=70?'목표 달성권':'목표(70%)까지',c:occColor(now.pct)},
-    {l:MONTHS[mi]+' 매출',v:wonM(now.rev),d:won(now.rev)},
-    {l:'전월 대비',v:prev?((mom>=0?'+':'')+mom.toFixed(1)+'%'):'—',d:prev?`${wonM(prev.rev)} → ${wonM(now.rev)}`:'이전 데이터 없음',cls:mom>=0?'up':'down'},
-  ];
-  $('sumgrid').innerHTML=cards.map(c=>`<div class="scard"><div class="l">${c.l}</div><div class="v" style="${c.c?`color:${c.c}`:''}">${c.v}</div><div class="d ${c.cls||''}">${c.d}</div></div>`).join('');
+  if(t2mode==='single'){
+    const now=allDay(dA), ref=allDay(clampMs(dA-7*DAY)), mom=ref.rev?(now.rev-ref.rev)/ref.rev*100:0;
+    cardHTML([
+      {l:'운영 지점',v:branches.length+'개',d:'A ~ E지점'},
+      {l:'총 락커 수',v:now.total+'개',d:`점유 ${now.occ}개`},
+      {l:'평균 점유율',v:now.pct.toFixed(1)+'%',d:now.pct>=70?'목표 달성권':'목표(70%)까지',c:occColor(now.pct)},
+      {l:dl(dA)+' 매출',v:wonM(now.rev),d:won(now.rev)},
+      {l:'전주(7일 전) 대비',v:sign(mom)+mom.toFixed(1)+'%',d:`${wonM(ref.rev)} → ${wonM(now.rev)}`,cls:mom>=0?'up':'down'},
+    ]);
+  } else {
+    const A=allDay(dA),B=allDay(dB),dp=B.pct-A.pct,dr=A.rev?(B.rev-A.rev)/A.rev*100:0;
+    cardHTML([
+      {l:'기준일 점유율',v:A.pct.toFixed(1)+'%',d:dl(dA),c:occColor(A.pct)},
+      {l:'비교일 점유율',v:B.pct.toFixed(1)+'%',d:dl(dB),c:occColor(B.pct)},
+      {l:'점유율 변화',v:sign(dp)+dp.toFixed(1)+'%p',d:`${A.occ}개 → ${B.occ}개`,cls:dp>=0?'up':'down'},
+      {l:'매출 변화',v:sign(dr)+dr.toFixed(1)+'%',d:`${wonM(A.rev)} → ${wonM(B.rev)}`,cls:dr>=0?'up':'down'},
+      {l:'총 락커 수',v:A.total+'개',d:'A ~ E지점'},
+    ]);
+  }
 }
 function renderMatrix(){
-  $('matTip').textContent=MONTHS[mi]+' 기준';
-  const cell=p=>`<span class="pc" style="color:${occColor(p)};background:${occBg(p)}">${p.toFixed(0)}%</span>`;
   const head=`<thead><tr><th>지점</th>${SZN.map(s=>`<th>${s}</th>`).join('')}<th>전체</th></tr></thead>`;
-  let rows=branches.map(b=>{
-    const tds=b.sizes.map(z=>`<td>${cell(sizeAt(z,mi).pct)}</td>`).join('');
-    return `<tr><td>${b.name}</td>${tds}<td>${cell(brAt(b,mi).pct)}</td></tr>`;
-  }).join('');
-  const colTot=SZN.map(sn=>{let t=0,o=0;branches.forEach(b=>{const z=b.sizes.find(x=>x.n===sn);t+=z.total;o+=z.occ[mi];});return `<td>${cell(t?o/t*100:0)}</td>`;}).join('');
-  rows+=`<tr><td>전체 평균</td>${colTot}<td>${cell(allAt(mi).pct)}</td></tr>`;
+  const pc=p=>`<span class="pc" style="color:${occColor(p)};background:${occBg(p)}">${p.toFixed(0)}%</span>`;
+  const dcell=(a,b)=>{const d=b-a,col=Math.abs(d)<0.5?'var(--sub2)':d>0?'var(--ok)':'var(--bad)',bg=Math.abs(d)<0.5?'#F2F4F6':d>0?'var(--okbg)':'var(--badbg)';
+    return `<span class="pc" style="color:${col};background:${bg}">${sign(d)}${d.toFixed(0)}%p<span class="delta" style="color:var(--sub2)">${a.toFixed(0)}→${b.toFixed(0)}%</span></span>`;};
+  let rows;
+  if(t2mode==='single'){
+    $('matTip').textContent=dl(dA)+' 기준 점유율';
+    rows=branches.map(b=>`<tr><td>${b.name}</td>${b.sizes.map(z=>`<td>${pc(sizeDay(z,dA).pct)}</td>`).join('')}<td>${pc(brDay(b,dA).pct)}</td></tr>`).join('');
+    const ct=SZN.map(sn=>{let t=0,o=0;branches.forEach(b=>{const s=sizeDay(b.sizes.find(x=>x.n===sn),dA);t+=s.total;o+=s.occ;});return `<td>${pc(t?o/t*100:0)}</td>`;}).join('');
+    rows+=`<tr><td>전체 평균</td>${ct}<td>${pc(allDay(dA).pct)}</td></tr>`;
+  } else {
+    $('matTip').textContent=`${dl(dA)} → ${dl(dB)} 점유율 변화(%p)`;
+    rows=branches.map(b=>`<tr><td>${b.name}</td>${b.sizes.map(z=>`<td>${dcell(sizeDay(z,dA).pct,sizeDay(z,dB).pct)}</td>`).join('')}<td>${dcell(brDay(b,dA).pct,brDay(b,dB).pct)}</td></tr>`).join('');
+    const ct=SZN.map(sn=>{let ta=0,oa=0,tb=0,ob=0;branches.forEach(b=>{const z=b.sizes.find(x=>x.n===sn),a=sizeDay(z,dA),bb=sizeDay(z,dB);ta+=a.total;oa+=a.occ;tb+=bb.total;ob+=bb.occ;});return `<td>${dcell(ta?oa/ta*100:0,tb?ob/tb*100:0)}</td>`;}).join('');
+    rows+=`<tr><td>전체 평균</td>${ct}<td>${dcell(allDay(dA).pct,allDay(dB).pct)}</td></tr>`;
+  }
   $('matrix').innerHTML=head+`<tbody>${rows}</tbody>`;
 }
 function renderBranches(){
+  const cur = t2mode==='compare'?dB:dA;
+  const ref = t2mode==='compare'?dA:clampMs(dA-7*DAY);
+  const refL = t2mode==='compare'?dl(dA):'전주';
+  const curL = t2mode==='compare'?dl(dB):dl(dA);
   $('branches').innerHTML=branches.map(b=>{
-    const now=brAt(b,mi), prev=mi>0?brAt(b,mi-1):null, bm=prev&&prev.rev?(now.rev-prev.rev)/prev.rev*100:0;
-    const rows=b.sizes.map(z=>{
-      const s=sizeAt(z,mi), sp=mi>0?sizeAt(z,mi-1):null, dm=sp&&sp.rev?(s.rev-sp.rev)/sp.rev*100:0;
+    const C=brDay(b,cur), R=brDay(b,ref), bm=R.rev?(C.rev-R.rev)/R.rev*100:0, dpb=C.pct-R.pct;
+    const rows=b.sizes.map(z=>{const c=sizeDay(z,cur),r=sizeDay(z,ref),dp=c.pct-r.pct;
       return `<tr><td>${z.n} <span style="color:var(--sub2);font-weight:600">(${comma(pOf(z.n))}원)</span></td><td>${z.total}개</td>
-        <td><span class="occpill" style="color:${occColor(s.pct)};background:${occBg(s.pct)}">${s.occ}개 · ${s.pct.toFixed(0)}%</span></td>
-        <td>${sp?won(sp.rev):'—'}</td><td>${won(s.rev)}</td><td class="${dm>=0?'up':'down'}" style="font-weight:800">${sp?(dm>=0?'+':'')+dm.toFixed(0)+'%':'—'}</td></tr>`;
-    }).join('');
+        <td><span class="occpill" style="color:${occColor(c.pct)};background:${occBg(c.pct)}">${c.occ}개 · ${c.pct.toFixed(0)}%</span></td>
+        <td>${r.pct.toFixed(0)}%</td><td class="${dp>=0?'up':'down'}" style="font-weight:800">${sign(dp)}${dp.toFixed(0)}%p</td><td>${won(c.rev)}</td></tr>`;}).join('');
     return `<div class="br"><div class="brhead">
-      <div class="bn"><span class="occpill" style="color:${occColor(now.pct)};background:${occBg(now.pct)}">${now.pct.toFixed(0)}%</span>${b.name}</div>
-      <div class="cell"><div class="cl">락커 수</div><div class="cv">${now.total}개</div></div>
-      <div class="cell"><div class="cl">점유</div><div class="cv" style="color:${occColor(now.pct)}">${now.occ}개 · ${now.pct.toFixed(0)}%</div></div>
-      <div class="cell hideM"><div class="cl">전월 매출</div><div class="cv">${prev?wonM(prev.rev):'—'}</div></div>
-      <div class="cell"><div class="cl">${MONTHS[mi]} 매출</div><div class="cv">${wonM(now.rev)} <span class="${bm>=0?'up':'down'}" style="font-size:11px">${prev?`(${bm>=0?'+':''}${bm.toFixed(0)}%)`:''}</span></div></div>
-      <div class="arrow">▼</div></div>
-      <div class="brbody"><table class="det"><thead><tr><th>사이즈 (단가)</th><th>락커 수</th><th>점유 (수·%)</th><th>전월 매출</th><th>${MONTHS[mi]} 매출</th><th>증감</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+      <div class="bn"><span class="occpill" style="color:${occColor(C.pct)};background:${occBg(C.pct)}">${C.pct.toFixed(0)}%</span>${b.name}</div>
+      <div class="cell"><div class="cl">락커 수</div><div class="cv">${C.total}개</div></div>
+      <div class="cell"><div class="cl">점유</div><div class="cv" style="color:${occColor(C.pct)}">${C.occ}개 · ${C.pct.toFixed(0)}%</div></div>
+      <div class="cell hideM"><div class="cl">${refL} 대비</div><div class="cv ${dpb>=0?'up':'down'}">${sign(dpb)}${dpb.toFixed(0)}%p</div></div>
+      <div class="cell"><div class="cl">${curL} 매출</div><div class="cv">${wonM(C.rev)} <span class="${bm>=0?'up':'down'}" style="font-size:11px">(${sign(bm)}${bm.toFixed(0)}%)</span></div></div>
+      <div class="arrow">▾</div></div>
+      <div class="brbody"><table class="det"><thead><tr><th>사이즈 (단가)</th><th>락커 수</th><th>점유 (수·%)</th><th>${refL} 점유율</th><th>변화</th><th>${curL} 매출</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   }).join('');
   $('branches').querySelectorAll('.brhead').forEach(h=>h.onclick=()=>h.parentElement.classList.toggle('open'));
 }
@@ -608,30 +664,37 @@ function exportTab1(){
 }
 
 function exportTab2(){
-  const wb=XLSX.utils.book_new(), m=MONTHS[mi];
-  // 1) 지점 요약
-  const s1=[[`지점별 락커 점유 현황 — ${m}`],[],['지점','총 락커','점유 라커','점유율(%)','전월 매출','당월 매출','전월 대비(%)']];
-  branches.forEach(b=>{const now=brAt(b,mi),prev=mi>0?brAt(b,mi-1):null;s1.push([b.name,now.total,now.occ,+now.pct.toFixed(1),prev?prev.rev:0,now.rev,prev&&prev.rev?+((now.rev-prev.rev)/prev.rev*100).toFixed(1):0]);});
-  const a=allAt(mi),ap=mi>0?allAt(mi-1):null;
-  s1.push(['전체',a.total,a.occ,+a.pct.toFixed(1),ap?ap.rev:0,a.rev,ap&&ap.rev?+((a.rev-ap.rev)/ap.rev*100).toFixed(1):0]);
-  sheet(wb,`지점 요약(${m})`,s1,[12,9,10,10,14,14,12]);
-  // 2) 사이즈별 상세 (선택 월)
-  const s2=[[`사이즈별 점유 상세 — ${m}`],[],['지점','사이즈','단가(원)','락커 수','점유 라커','점유율(%)','당월 매출']];
-  branches.forEach(b=>b.sizes.forEach(z=>{const s=sizeAt(z,mi);s2.push([b.name,z.n,pOf(z.n),s.total,s.occ,+s.pct.toFixed(1),s.rev]);}));
-  sheet(wb,`사이즈별 상세(${m})`,s2,[12,9,12,9,10,10,14]);
-  // 3) 사이즈별 × 지점별 점유율 비교 매트릭스
-  const s3=[[`사이즈별 × 지점별 점유율(%) — ${m}`],[],['지점',...SZN,'전체']];
-  branches.forEach(b=>{s3.push([b.name,...b.sizes.map(z=>+sizeAt(z,mi).pct.toFixed(1)),+brAt(b,mi).pct.toFixed(1)]);});
-  s3.push(['전체 평균',...SZN.map(sn=>{let t=0,o=0;branches.forEach(b=>{const z=b.sizes.find(x=>x.n===sn);t+=z.total;o+=z.occ[mi];});return +(t?o/t*100:0).toFixed(1);}),+allAt(mi).pct.toFixed(1)]);
-  sheet(wb,'점유율 비교 매트릭스',s3,[12,9,9,9,9]);
-  // 4) 월별 점유율 추이 (전 기간)
-  const s4=[['월별 점유율(%) 추이'],[],['월',...branches.map(b=>b.name),'전체']];
-  MONTHS.forEach((mm,k)=>{s4.push([mm,...branches.map(b=>+brAt(b,k).pct.toFixed(1)),+allAt(k).pct.toFixed(1)]);});
-  // 월별 매출 추이도
-  s4.push([],['월별 매출(원) 추이'],['월',...branches.map(b=>b.name),'전체']);
-  MONTHS.forEach((mm,k)=>{s4.push([mm,...branches.map(b=>brAt(b,k).rev),allAt(k).rev]);});
-  sheet(wb,'월별 추이',s4,[9,11,11,11,11,11,11]);
-  XLSX.writeFile(wb,`지점별_락커_점유현황_${m}.xlsx`);
+  const wb=XLSX.utils.book_new();
+  if(t2mode==='single'){
+    const m=dl(dA), ref=clampMs(dA-7*DAY);
+    const s1=[[`지점별 락커 점유 현황 — ${m}`],[],['지점','총 락커','점유 라커','점유율(%)','전주 매출','당일 매출','전주 대비(%)']];
+    branches.forEach(b=>{const n=brDay(b,dA),p=brDay(b,ref);s1.push([b.name,n.total,n.occ,+n.pct.toFixed(1),p.rev,n.rev,p.rev?+((n.rev-p.rev)/p.rev*100).toFixed(1):0]);});
+    const a=allDay(dA),ap=allDay(ref);
+    s1.push(['전체',a.total,a.occ,+a.pct.toFixed(1),ap.rev,a.rev,ap.rev?+((a.rev-ap.rev)/ap.rev*100).toFixed(1):0]);
+    sheet(wb,'지점 요약',s1,[12,9,10,10,14,14,12]);
+    const s2=[[`사이즈별 점유 상세 — ${m}`],[],['지점','사이즈','단가(원)','락커 수','점유 라커','점유율(%)','당일 매출']];
+    branches.forEach(b=>b.sizes.forEach(z=>{const s=sizeDay(z,dA);s2.push([b.name,z.n,pOf(z.n),s.total,s.occ,+s.pct.toFixed(1),s.rev]);}));
+    sheet(wb,'사이즈별 상세',s2,[12,9,12,9,10,10,14]);
+    const s3=[[`사이즈별 × 지점별 점유율(%) — ${m}`],[],['지점',...SZN,'전체']];
+    branches.forEach(b=>{s3.push([b.name,...b.sizes.map(z=>+sizeDay(z,dA).pct.toFixed(1)),+brDay(b,dA).pct.toFixed(1)]);});
+    s3.push(['전체 평균',...SZN.map(sn=>{let t=0,o=0;branches.forEach(b=>{const s=sizeDay(b.sizes.find(x=>x.n===sn),dA);t+=s.total;o+=s.occ;});return +(t?o/t*100:0).toFixed(1);}),+allDay(dA).pct.toFixed(1)]);
+    sheet(wb,'점유율 매트릭스',s3,[12,9,9,9,9]);
+    XLSX.writeFile(wb,`지점별_락커_점유_${toStr(dA)}.xlsx`);
+  } else {
+    const la=dl(dA), lb=dl(dB);
+    const s1=[[`기간 비교 — ${la} vs ${lb}`],[],['지점','기준 점유율(%)','비교 점유율(%)','점유율 변화(%p)','기준 매출','비교 매출','매출 변화(%)']];
+    branches.forEach(b=>{const A=brDay(b,dA),B=brDay(b,dB);s1.push([b.name,+A.pct.toFixed(1),+B.pct.toFixed(1),+(B.pct-A.pct).toFixed(1),A.rev,B.rev,A.rev?+((B.rev-A.rev)/A.rev*100).toFixed(1):0]);});
+    const A=allDay(dA),B=allDay(dB);
+    s1.push(['전체',+A.pct.toFixed(1),+B.pct.toFixed(1),+(B.pct-A.pct).toFixed(1),A.rev,B.rev,A.rev?+((B.rev-A.rev)/A.rev*100).toFixed(1):0]);
+    sheet(wb,'기간 비교 요약',s1,[12,13,13,14,13,13,12]);
+    const s2=[[`사이즈별 점유율 비교 — ${la} → ${lb}`],[],['지점','사이즈','기준(%)','비교(%)','변화(%p)','기준 매출','비교 매출']];
+    branches.forEach(b=>b.sizes.forEach(z=>{const a=sizeDay(z,dA),bb=sizeDay(z,dB);s2.push([b.name,z.n,+a.pct.toFixed(1),+bb.pct.toFixed(1),+(bb.pct-a.pct).toFixed(1),a.rev,bb.rev]);}));
+    sheet(wb,'사이즈별 비교',s2,[12,9,10,10,11,13,13]);
+    const s3=[[`점유율 변화 매트릭스(%p) — ${la} → ${lb}`],[],['지점',...SZN,'전체']];
+    branches.forEach(b=>{s3.push([b.name,...b.sizes.map(z=>+(sizeDay(z,dB).pct-sizeDay(z,dA).pct).toFixed(1)),+(brDay(b,dB).pct-brDay(b,dA).pct).toFixed(1)]);});
+    sheet(wb,'변화 매트릭스',s3,[12,9,9,9,9]);
+    XLSX.writeFile(wb,`락커_기간비교_${toStr(dA)}_vs_${toStr(dB)}.xlsx`);
+  }
 }
 </script>
 </body>
