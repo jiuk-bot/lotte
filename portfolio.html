@@ -421,6 +421,22 @@ p,h1,h2,h3,h4,li,span,div,td,th{
   .exstep-body p{ font-size:13.5px !important; color:#444; line-height:1.6; }
   .exstep-body p b{ color:var(--primary-dark); font-weight:800; }
   @media(max-width:680px){ .exstep{ grid-template-columns:1fr; } }
+  /* 실행 과정 — 이전 → 개선 → 성과 플로우 */
+  .flow{ display:flex; flex-direction:column; gap:15px; margin-top:12px; }
+  .fitem .ftitle{ font-size:12.5px; font-weight:800; color:var(--primary); margin-bottom:8px; }
+  .frow{ display:grid; grid-template-columns:1fr 20px 1.05fr 20px 1.05fr; gap:8px; align-items:stretch; }
+  .flowcard{ border-radius:12px; padding:12px 14px; font-size:13.5px; line-height:1.52; }
+  .flowcard .fl{ font-size:10.5px; font-weight:800; margin-bottom:5px; }
+  .flowcard.fb{ background:#FAFAFA; border:1px solid var(--line); color:#6B7280; }
+  .flowcard.fb .fl{ color:var(--sub2); }
+  .flowcard.fa{ background:var(--soft); border:1px solid transparent; color:var(--ink); font-weight:600; }
+  .flowcard.fa .fl{ color:var(--primary-dark); }
+  .flowcard.fr{ background:#F0FBF4; border:1px solid #CBEBD6; color:var(--ink); font-weight:700; }
+  .flowcard.fr .fl{ color:#17883B; }
+  .flowcard.fr b{ color:#17883B; font-weight:800; }
+  .flowcard.fa b{ color:var(--primary-dark); font-weight:800; }
+  .frow .farrow{ display:flex; align-items:center; justify-content:center; color:#C2C8D0; font-weight:800; font-size:16px; }
+  @media(max-width:680px){ .frow{ grid-template-columns:1fr; gap:6px; } .frow .farrow{ transform:rotate(90deg); height:12px; } }
   .gapbar{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:15px 17px; margin:12px 0 2px; }
   .gb-head{ display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:700; color:var(--sub); margin-bottom:9px; flex-wrap:wrap; gap:6px; }
   .gb-gap{ color:var(--primary-dark); font-weight:800; background:var(--soft); border-radius:999px; padding:3px 10px; }
@@ -477,7 +493,7 @@ p,h1,h2,h3,h4,li,span,div,td,th{
       </div>
     </div>
     <div class="case-body">
-      <div class="case-lead">클릭이 아니라 <b>전환·리드 품질</b>이 성과다 — <b>구매 여정 데이터</b>로 리마인드 타이밍을 최적화해 신규 고객을 <b>+63%</b> 늘렸습니다.</div>
+      <div class="case-lead">셀프스토리지 짐보관은 <b>인지 후 결제까지 평균 3.89일</b> 걸리는 <b>고관여 상품</b> — 리드가 아니라 전환이 성과이기에, <b>고객 여정에 맞는 매체·타이밍</b>으로 접근해 신규 고객 <b>전환을 +63%</b> 늘렸습니다.</div>
       <div class="sec">
         <div class="sec-label"><span class="sec-num" style="background:var(--primary);color:#fff">★</span>어떤 성과가 났나</div>
         <div class="stats">
@@ -509,22 +525,43 @@ p,h1,h2,h3,h4,li,span,div,td,th{
       </div>
       <div class="sec">
         <div class="sec-label"><span class="sec-num">②</span>무엇이 문제였나</div>
-        <p>자극적 클릭형 소재는 <b>CTR은 높아도 전환·리드 품질이 낮았고</b>, 구매까지 여정이 길어 1회 노출로는 전환이 어려웠다.</p>
+        <p>자극적 클릭형 소재는 <b>CTR은 높아도 전환 품질이 낮았고</b>, 인지→결제까지 <b>평균 3.89일</b> 걸리는 고관여 상품이라 1회 노출로는 전환이 어려웠다.</p>
       </div>
       <div class="sec">
         <div class="sec-label"><span class="sec-num">③</span>어떻게 접근했나</div>
-        <p class="approach">"<b>클릭(CTR)이 아니라 전환·리드 품질이 성과다</b>. 구매 여정 데이터로 <b>리마인드 타이밍을 최적화</b>하자."</p>
+        <p class="approach">"<b>클릭(CTR)이 아니라 전환이 성과다</b>. 고관여 상품인 만큼 <b>구매 여정 데이터로 여정 단계에 맞는 매체·타이밍</b>에 접근하자."</p>
       </div>
       <div class="sec">
-        <div class="sec-label"><span class="sec-num">④</span>무엇을 했나 — 실행 과정</div>
-        <ol class="steps">
-          <li>GA4로 첫 유입→결제 <b>평균 3.89일 구매 여정</b>을 분석</li>
-          <li>검색(SEO)→META 노출·리마케팅→블로그 신뢰→결제의 <b>4단계 전환 퍼널</b> 설계</li>
-          <li>자극적 소재를 <b>'퇴근 후 공감형' AI 영상</b>으로 전환</li>
-          <li>유사타깃·픽셀 세분화로 <b>실구매 가능 고객에 집중</b></li>
-          <li>리뷰 기반 <b>리마케팅 운영</b></li>
-          <li>META vs 당근 매체·소재(공감/가격강조/밈) <b>다변수 A/B</b></li>
-        </ol>
+        <div class="sec-label"><span class="sec-num">④</span>무엇을 했나 — 이전 → 개선 → 성과</div>
+        <div class="flow">
+          <div class="fitem"><div class="ftitle">소재 전략</div>
+            <div class="frow">
+              <div class="flowcard fb"><div class="fl">이전</div>자극적 클릭형 소재 — CTR만 높고 전환 품질이 낮음</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fa"><div class="fl">개선</div>'퇴근 후 공감형' AI 영상으로 교체 + 공감·가격·밈 <b>다변수 A/B</b></div>
+              <div class="farrow">→</div>
+              <div class="flowcard fr"><div class="fl">성과</div>CTR <b>9.56%</b> · 소재 CPA <b>−24%</b> · A/B 전환 <b>+31.3%</b></div>
+            </div>
+          </div>
+          <div class="fitem"><div class="ftitle">여정·리마케팅 타이밍</div>
+            <div class="frow">
+              <div class="flowcard fb"><div class="fl">이전</div>1회 노출로 단건 전환 시도 — 긴 여정에서 고객 이탈</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fa"><div class="fl">개선</div>GA4로 <b>평균 3.89일 구매 여정</b> 분석 → 리뷰 기반 리마케팅 타이밍 최적화 + 유사타깃·픽셀 세분화</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fr"><div class="fl">성과</div>리마케팅 CVR <b>62%</b> · 신규 고객 전환 <b>+63%</b></div>
+            </div>
+          </div>
+          <div class="fitem"><div class="ftitle">매체 선택</div>
+            <div class="frow">
+              <div class="flowcard fb"><div class="fl">이전</div>매체별 성과 검증 없이 단일 운영</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fa"><div class="fl">개선</div>검색(SEO)→META→블로그→결제 <b>4단계 전환 퍼널</b> 설계 + META vs 당근 매체 A/B</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fr"><div class="fl">성과</div>여정에 맞는 <b>META가 CPC·전환율 우위</b> 확인 → 예산 집중</div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="sec">
         <div class="sec-label"><span class="sec-num">⑥</span>무엇을 배웠나</div>
@@ -614,7 +651,7 @@ p,h1,h2,h3,h4,li,span,div,td,th{
       </div>
     </div>
     <div class="case-body">
-      <div class="case-lead">광고로 사람을 더 데려오기 전에 <b>전환율(CRO)부터</b> — 예약 페이지 조회는 많은데 결제는 0이던 병목을 뚫어 매출을 <b>약 16배</b> 끌어올렸습니다.</div>
+      <div class="case-lead"><b>광고로 사람을 더 데려오기 전에 랜딩페이지 UI/UX부터</b> — 조회는 많은데 결제는 0이던 예약·결제 흐름을 <b>사용자 친화적으로 개선(CRO)</b>해 <b>전환율(CVR)</b>과 매출을 <b>약 16배</b> 끌어올렸습니다.</div>
       <div class="sec">
         <div class="sec-label"><span class="sec-num" style="background:var(--primary);color:#fff">★</span>어떤 성과가 났나</div>
         <div class="stats c2">
@@ -640,19 +677,34 @@ p,h1,h2,h3,h4,li,span,div,td,th{
       </div>
       <div class="sec">
         <div class="sec-label"><span class="sec-num">③</span>어떻게 접근했나</div>
-        <p class="approach">"노출 부재와 결제 흐름이 전환 병목이다. <b>광고 유입 확대보다 전환율(CRO) 개선이 실매출에 직결</b>된다."</p>
+        <p class="approach">"결제 흐름·랜딩 UX가 전환 병목이다. 광고 유입 확대보다 <b>랜딩페이지 UI/UX를 사용자 친화적으로 개선(CRO)</b>해 <b>전환율(CVR)</b>을 올리는 게 실매출에 직결된다."</p>
       </div>
       <div class="sec">
-        <div class="sec-label"><span class="sec-num">④</span>무엇을 했나 — 실행 과정</div>
-        <ol class="steps">
-          <li>GA4로 병목을 <b>'고객센터 경유·즉시결제 불가' 구조</b>로 진단</li>
-          <li><b>실시간 결제 시스템 도입을 제안·설계 참여</b>해 예약·결제 흐름 간소화</li>
-          <li>취미·엔터 공간 정보를 한 곳에 모은 랜딩페이지 제작 + <b>홈페이지 메인 노출</b>로 서비스 인지·전환 경로 단축</li>
-        </ol>
+        <div class="sec-label"><span class="sec-num">④</span>무엇을 했나 — 이전 → 개선 → 성과</div>
+        <div class="flow">
+          <div class="fitem"><div class="ftitle">예약·결제 흐름 (UX)</div>
+            <div class="frow">
+              <div class="flowcard fb"><div class="fl">이전</div>고객센터 경유 예약 · 즉시결제 불가 — 조회는 많은데 결제 0</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fa"><div class="fl">개선</div>GA4로 병목 진단 → <b>실시간 결제 시스템 도입을 제안·설계</b>해 예약·결제 흐름 간소화</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fr"><div class="fl">성과</div>결제 <b>0 → 전환 발생</b></div>
+            </div>
+          </div>
+          <div class="fitem"><div class="ftitle">랜딩페이지·노출</div>
+            <div class="frow">
+              <div class="flowcard fb"><div class="fl">이전</div>공간 정보가 분산돼 서비스 인지·전환 경로가 길음</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fa"><div class="fl">개선</div>취미·엔터 공간 정보를 모은 랜딩페이지 제작 + <b>홈페이지 메인 노출</b>로 경로 단축</div>
+              <div class="farrow">→</div>
+              <div class="flowcard fr"><div class="fl">성과</div>공간예약 매출 <b>약 16배↑</b> (25.02→25.05, 1,653%)</div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="sec">
         <div class="sec-label"><span class="sec-num">⑥</span>무엇을 배웠나</div>
-        <p class="insight">광고로 사람을 더 데려오기 전에, <b>전환율(결제 흐름·노출 구조)부터 고치는 게 실매출에 직결</b>된다.</p>
+        <p class="insight">광고로 사람을 더 데려오기 전에, <b>랜딩페이지 UX·결제 흐름(전환율, CVR)부터 고치는 게 실매출에 직결</b>된다.</p>
       </div>
     </div>
   </section>
