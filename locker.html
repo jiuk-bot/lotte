@@ -558,8 +558,8 @@ function brDay(b,ms){let t=0,o=0,r=0;b.sizes.forEach(z=>{const s=sizeDay(z,ms);t
 function allDay(ms){let t=0,o=0,r=0;branches.forEach(b=>{const d=brDay(b,ms);t+=d.total;o+=d.occ;r+=d.rev;});return{total:t,occ:o,rev:r,pct:t?o/t*100:0};}
 
 let t2mode='single', dA=END;
-// 비교 기본값: 기간 A = 전월(9월), 기간 B = 당월(10월)
-let aS=Date.UTC(2026,8,1), aE=Date.UTC(2026,8,30), bS=Date.UTC(2026,9,1), bE=END;
+// 비교 기본값: 기간 A = 도입 초기(5월), 기간 B = 현재(10월)
+let aS=START, aE=Date.UTC(2026,4,31), bS=Date.UTC(2026,9,1), bE=END;
 ['dateA','aStart','aEnd','bStart','bEnd'].forEach(id=>{$(id).min=toStr(START);$(id).max=toStr(END);});
 $('dateA').value=toStr(dA);$('aStart').value=toStr(aS);$('aEnd').value=toStr(aE);$('bStart').value=toStr(bS);$('bEnd').value=toStr(bE);
 function syncRanges(){ if(aE<aS){[aS,aE]=[aE,aS];} if(bE<bS){[bS,bE]=[bE,bS];}
@@ -577,9 +577,10 @@ document.querySelectorAll('.modeseg .seg').forEach(s=>s.onclick=()=>{
 });
 
 // ===== 기간 집계 (일 평균) — 점유율=일평균 점유율, 매출=일평균 월매출 런레이트 =====
-function sizeRange(z,s,e){ const lo=Math.min(s,e),hi=Math.max(s,e); let n=0,o=0,r=0;
-  for(let ms=lo;ms<=hi;ms+=DAY){const d=sizeDay(z,ms);o+=d.occ;r+=d.rev;n++;} n=n||1;
-  return {total:z.total,occ:o/n,pct:z.total?(o/n)/z.total*100:0,rev:r/n}; }
+function sizeRange(z,s,e){ const lo=Math.min(s,e),hi=Math.max(s,e); let n=0,o=0;
+  for(let ms=lo;ms<=hi;ms+=DAY){o+=occDay(z,ms);n++;}
+  const occ=Math.round(o/(n||1)); // 기간 일평균 점유 → 정수 라커 수로 반올림
+  return {total:z.total,occ,pct:z.total?occ/z.total*100:0,rev:occ*pOf(z.n)}; }
 function brRange(b,s,e){ let t=0,o=0,r=0; b.sizes.forEach(z=>{const d=sizeRange(z,s,e);t+=d.total;o+=d.occ;r+=d.rev;}); return {total:t,occ:o,rev:r,pct:t?o/t*100:0}; }
 function allRange(s,e){ let t=0,o=0,r=0; branches.forEach(b=>{const d=brRange(b,s,e);t+=d.total;o+=d.occ;r+=d.rev;}); return {total:t,occ:o,rev:r,pct:t?o/t*100:0}; }
 function rl(s,e){ return `${dl(Math.min(s,e))} ~ ${dl(Math.max(s,e))}`; }
@@ -601,7 +602,7 @@ function renderSummary(){
     cardHTML([
       {l:`기간 A 평균 점유율`,v:A.pct.toFixed(1)+'%',d:`${rl(aS,aE)} · ${ndays(aS,aE)}일`,c:occColor(A.pct)},
       {l:`기간 B 평균 점유율`,v:B.pct.toFixed(1)+'%',d:`${rl(bS,bE)} · ${ndays(bS,bE)}일`,c:occColor(B.pct)},
-      {l:'점유율 변화',v:sign(dp)+dp.toFixed(1)+'%p',d:`일평균 ${A.occ.toFixed(1)}개 → ${B.occ.toFixed(1)}개`,cls:dp>=0?'up':'down'},
+      {l:'점유율 변화',v:sign(dp)+dp.toFixed(1)+'%p',d:`평균 ${A.occ}개 → ${B.occ}개`,cls:dp>=0?'up':'down'},
       {l:'평균 월매출 변화',v:sign(dr)+dr.toFixed(1)+'%',d:`${wonM(A.rev)} → ${wonM(B.rev)}`,cls:dr>=0?'up':'down'},
       {l:'총 락커 수',v:A.total+'개',d:'A ~ E지점'},
     ]);
@@ -644,12 +645,12 @@ function renderBranches(){
           <td class="grp" rowspan="2">${z.n} <span style="color:var(--sub2);font-weight:600">(${comma(pOf(z.n))}원)</span></td>
           <td class="grp" rowspan="2">${z.total}개</td>
           <td class="perc"><span class="perlab perA">기간 A</span></td>
-          <td>${a.occ.toFixed(1)}개 · ${a.pct.toFixed(1)}%</td>
+          <td>${a.occ}개 · ${a.pct.toFixed(0)}%</td>
           <td>${won(a.rev)}</td></tr>
         <tr class="rowB">
           <td class="perc"><span class="perlab perB">기간 B</span></td>
-          <td><span class="occpill" style="color:${occColor(bb.pct)};background:${occBg(bb.pct)}">${bb.occ.toFixed(1)}개 · ${bb.pct.toFixed(1)}%</span><span class="dlt" style="color:${dcol(dp)}">${sign(dp)}${dp.toFixed(1)}%p</span></td>
-          <td>${won(bb.rev)}<span class="dlt" style="color:${dcol(dr)}">${sign(dr)}${dr.toFixed(1)}%</span></td></tr>`;
+          <td><span class="occpill" style="color:${occColor(bb.pct)};background:${occBg(bb.pct)}">${bb.occ}개 · ${bb.pct.toFixed(0)}%</span><span class="dlt" style="color:${dcol(dp)}">${sign(dp)}${dp.toFixed(0)}%p</span></td>
+          <td>${won(bb.rev)}<span class="dlt" style="color:${dcol(dr)}">${sign(dr)}${dr.toFixed(0)}%</span></td></tr>`;
       }).join('');
       detail=`<table class="det"><thead><tr><th>사이즈 (단가)</th><th>락커 수</th><th>기간</th><th>점유 (수·%)</th><th>평균 월매출</th></tr></thead><tbody>${body}</tbody></table>`;
     } else {
@@ -662,7 +663,7 @@ function renderBranches(){
     return `<div class="br"><div class="brhead">
       <div class="bn"><span class="occpill" style="color:${occColor(C.pct)};background:${occBg(C.pct)}">${C.pct.toFixed(0)}%</span>${b.name}</div>
       <div class="cell"><div class="cl">락커 수</div><div class="cv">${C.total}개</div></div>
-      <div class="cell"><div class="cl">${isC?'B 평균 점유':'점유'}</div><div class="cv" style="color:${occColor(C.pct)}">${isC?C.occ.toFixed(1):C.occ}개 · ${C.pct.toFixed(0)}%</div></div>
+      <div class="cell"><div class="cl">${isC?'B 평균 점유':'점유'}</div><div class="cv" style="color:${occColor(C.pct)}">${C.occ}개 · ${C.pct.toFixed(0)}%</div></div>
       <div class="cell hideM"><div class="cl">${refL} 대비</div><div class="cv ${dpb>=0?'up':'down'}">${sign(dpb)}${dpb.toFixed(0)}%p</div></div>
       <div class="cell"><div class="cl">${mL}</div><div class="cv">${wonM(C.rev)} <span class="${bm>=0?'up':'down'}" style="font-size:11px">(${sign(bm)}${bm.toFixed(0)}%)</span></div></div>
       <div class="arrow">▾</div></div>
