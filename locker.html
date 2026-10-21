@@ -62,6 +62,7 @@
   table.sz .rec{ color:var(--blue-dark); font-weight:800; }
   table.sz .pinp input{ color:var(--blue-dark); width:92px; }
   table.sz .dinp input{ color:var(--warn); width:60px; }
+  table.sz .oinp input{ color:var(--ok); font-weight:800; }
   table.sz .tot td{ font-weight:800; background:#FAFBFC; }
   .szhint{ font-size:11.5px; color:var(--sub2); margin-top:9px; line-height:1.55; }
   .szhint b{ color:var(--blue-dark); }
@@ -177,10 +178,10 @@
       <div class="ctitle cbtitle" id="t2head"><span class="cbbox"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></span><span class="n">2</span>락커 사이즈 구성 (정가) <span class="cbtag" id="tag2">✓ 하단 계산에 사용 중</span></div>
       <table class="sz">
         <thead><tr>
-          <th>사이즈</th><th>가로(mm)</th><th>세로(mm)</th><th>면적(mm²)</th><th>개수</th><th>추천 단가</th><th>적용 단가(원/월)</th><th>100% 매출</th>
+          <th>사이즈</th><th>가로(mm)</th><th>세로(mm)</th><th>면적(mm²)</th><th>개수</th><th>점유 라커 수</th><th>추천 단가</th><th>적용 단가(원/월)</th><th>100% 매출</th>
         </tr></thead>
         <tbody id="sz2body"></tbody>
-        <tr class="tot"><td>합계</td><td>—</td><td>—</td><td id="t2Area">—</td><td id="t2Cnt">—</td><td>—</td><td class="rec" id="t2Note">추천 적용 중</td><td id="t2Cap">—</td></tr>
+        <tr class="tot"><td>합계</td><td>—</td><td>—</td><td id="t2Area">—</td><td id="t2Cnt">—</td><td id="t2Occ">—</td><td>—</td><td class="rec" id="t2Note">추천 적용 중</td><td id="t2Cap">—</td></tr>
       </table>
       <div class="szhint">💡 추천 단가는 <b>면적에 비례</b>하게 자동 산출됩니다 — 모든 락커가 <b>70% 찼을 때 매출 = 월세 × 2</b>가 되도록 역산. 단가를 직접 바꾸면 그 값으로 매출이 다시 계산됩니다. <span id="reset2w" style="display:none"><a href="#" id="reset2" style="color:var(--blue);font-weight:800;text-decoration:underline">추천값으로 리셋</a></span></div>
     </div>
@@ -190,10 +191,10 @@
       <div class="ctitle cbtitle" id="t3head"><span class="cbbox"><svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"/></svg></span><span class="n">3</span>락커 할인가 구성 <span class="cbtag" id="tag3">선택 안 됨</span></div>
       <table class="sz">
         <thead><tr>
-          <th>사이즈</th><th>가로(mm)</th><th>세로(mm)</th><th>면적(mm²)</th><th>개수</th><th>정가(원/월)</th><th>할인율(%)</th><th>할인 적용가</th><th>100% 매출</th>
+          <th>사이즈</th><th>가로(mm)</th><th>세로(mm)</th><th>면적(mm²)</th><th>개수</th><th>점유 라커 수</th><th>정가(원/월)</th><th>할인율(%)</th><th>할인 적용가</th><th>100% 매출</th>
         </tr></thead>
         <tbody id="sz3body"></tbody>
-        <tr class="tot"><td>합계</td><td>—</td><td>—</td><td id="t3Area">—</td><td id="t3Cnt">—</td><td>—</td><td class="dinp" id="t3Disc">—</td><td>—</td><td id="t3Cap">—</td></tr>
+        <tr class="tot"><td>합계</td><td>—</td><td>—</td><td id="t3Area">—</td><td id="t3Cnt">—</td><td id="t3Occ">—</td><td>—</td><td class="dinp">—</td><td>—</td><td id="t3Cap">—</td></tr>
       </table>
       <div class="szhint">💡 신규 고객·프로모션용 <b>할인가 시나리오</b>입니다. 정가는 추천값(70%=월세 2배)으로 시작하며, <b>사이즈별 할인율</b>을 넣으면 할인 적용가·할인 기준 매출이 계산됩니다. 이 구성을 체크하면 하단 지표가 <b>할인가 기준</b>으로 바뀝니다.</div>
     </div>
@@ -260,18 +261,23 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
 });
 
 /* ===== TAB 1 ===== */
-const TARGET_OCC=0.70, TARGET_MULT=2, PY=null;
+const TARGET_OCC=0.70, TARGET_MULT=2;
 let active = '2';                         // '2' | '3' | null
 const sizes2 = [
-  {name:'소형', w:300, h:400, count:40, price:null},
-  {name:'중형', w:500, h:600, count:30, price:null},
-  {name:'대형', w:800, h:1000, count:15, price:null},
+  {name:'소형', w:300, h:400, count:40, price:null, occ:28},
+  {name:'중형', w:500, h:600, count:30, price:null, occ:21},
+  {name:'대형', w:800, h:1000, count:15, price:null, occ:11},
 ];
 const sizes3 = [
-  {name:'소형', w:300, h:400, count:40, price:null, disc:30},
-  {name:'중형', w:500, h:600, count:30, price:null, disc:20},
-  {name:'대형', w:800, h:1000, count:15, price:null, disc:10},
+  {name:'소형', w:300, h:400, count:40, price:null, disc:30, occ:28},
+  {name:'중형', w:500, h:600, count:30, price:null, disc:20, occ:21},
+  {name:'대형', w:800, h:1000, count:15, price:null, disc:10, occ:11},
 ];
+function activeArr(){ return active==='2'?sizes2 : active==='3'?sizes3 : null; }
+function activePrices(arr, rent){ const r=recPrices(rent, arr);
+  if(active==='2') return arr.map((z,i)=> z.price!=null?z.price:r[i]);
+  return arr.map((z,i)=>{ const list=z.price!=null?z.price:r[i]; return Math.round(list*(1-(z.disc||0)/100)); }); }
+function clampOcc(){ [sizes2,sizes3].forEach(a=>a.forEach(z=>{ z.occ=Math.min(Math.max(0,Math.round(z.occ)),z.count); })); }
 
 function pNum(id){ return parseFloat(digits($(id).value))||0; }
 function recPrices(rent, arr){
@@ -290,41 +296,43 @@ function hookMoney(id){
   });
 }
 ['rent','fixed'].forEach(hookMoney);
-$('area').addEventListener('input', ()=>compute());
-$('occ').addEventListener('input', ()=>compute());
+$('area').addEventListener('input', compute);
+$('occ').addEventListener('input', onSlider);
 
 /* ---- 섹션 2 렌더 ---- */
 function render2(){
   const rent=pNum('rent'), recs=recPrices(rent, sizes2), dis=(active!=='2');
   const body=$('sz2body'); body.innerHTML='';
-  let area=0,cnt=0,cap=0,override=false;
+  let area=0,cnt=0,occ=0,cap=0,override=false;
   sizes2.forEach((z,i)=>{
-    const a=z.w*z.h, ap=(z.price!=null?z.price:recs[i]);
-    area+=a*z.count; cnt+=z.count; cap+=ap*z.count; if(z.price!=null) override=true;
+    const a=z.w*z.h, ap=(z.price!=null?z.price:recs[i]), o=Math.min(z.occ,z.count);
+    area+=a*z.count; cnt+=z.count; occ+=o; cap+=ap*z.count; if(z.price!=null) override=true;
     const tr=document.createElement('tr');
     tr.innerHTML=`<td class="nm">${z.name}</td>
       <td><input type="number" data-i="${i}" data-k="w" value="${z.w}" min="1" ${dis?'disabled':''}></td>
       <td><input type="number" data-i="${i}" data-k="h" value="${z.h}" min="1" ${dis?'disabled':''}></td>
       <td>${a.toLocaleString()}</td>
       <td><input type="number" data-i="${i}" data-k="count" value="${z.count}" min="0" ${dis?'disabled':''}></td>
+      <td class="oinp"><input type="number" data-i="${i}" data-k="occ" value="${o}" min="0" max="${z.count}" ${dis?'disabled':''}></td>
       <td class="rec">${comma(recs[i])}원</td>
       <td class="pinp"><input type="text" inputmode="numeric" data-i="${i}" data-k="price" value="${comma(ap)}" ${dis?'disabled':''}></td>
       <td>${won(ap*z.count)}</td>`;
     body.appendChild(tr);
   });
-  $('t2Area').textContent=area.toLocaleString()+' mm²'; $('t2Cnt').textContent=cnt+' 개';
+  $('t2Area').textContent=area.toLocaleString()+' mm²'; $('t2Cnt').textContent=cnt+' 개'; $('t2Occ').textContent=occ+' 개';
   $('t2Cap').textContent=won(cap); $('t2Note').textContent=override?'단가 직접 수정됨':'추천 적용 중';
   $('reset2w').style.display=override?'inline':'none';
-  bind2();
-  return {area,cnt,cap};
+  bindRows('sz2body', sizes2, 't2Occ');
 }
-function bind2(){
-  $('sz2body').querySelectorAll('input').forEach(inp=>{
-    const k=inp.dataset.k;
+function bindRows(bodyId, arr, occTotId){
+  $(bodyId).querySelectorAll('input').forEach(inp=>{
+    const k=inp.dataset.k, i=+inp.dataset.i;
     if(k==='price'){
-      inp.addEventListener('input',()=>{ const d=digits(inp.value).replace(/\./g,''); inp.value=d?(+d).toLocaleString('ko-KR'):''; sizes2[+inp.dataset.i].price=+d||0; computeOnly(); });
+      inp.addEventListener('input',()=>{ const d=digits(inp.value).replace(/\./g,''); inp.value=d?(+d).toLocaleString('ko-KR'):''; arr[i].price=+d||0; updateOutputs(false); });
+    } else if(k==='occ'){
+      inp.oninput=()=>{ arr[i].occ=Math.min(arr[i].count, Math.max(0,+inp.value||0)); $(occTotId).textContent=arr.reduce((s,z)=>s+Math.min(z.occ,z.count),0)+' 개'; updateOutputs(false); };
     } else {
-      inp.oninput=()=>{ sizes2[+inp.dataset.i][k]=Math.max(0,+inp.value||0); compute(); };
+      inp.oninput=()=>{ let v=Math.max(0,+inp.value||0); if(k==='disc') v=Math.min(100,v); arr[i][k]=v; compute(); };
     }
   });
 }
@@ -334,51 +342,45 @@ function render3(){
   const rent=pNum('rent'), recs=recPrices(rent, sizes3), dis=(active!=='3');
   const body=$('sz3body'); body.innerHTML='';
   let area=0,cnt=0,cap=0;
+  let occ=0;
   sizes3.forEach((z,i)=>{
-    const a=z.w*z.h, list=(z.price!=null?z.price:recs[i]), d=z.disc||0, dp=Math.round(list*(1-d/100));
-    area+=a*z.count; cnt+=z.count; cap+=dp*z.count;
+    const a=z.w*z.h, list=(z.price!=null?z.price:recs[i]), d=z.disc||0, dp=Math.round(list*(1-d/100)), o=Math.min(z.occ,z.count);
+    area+=a*z.count; cnt+=z.count; occ+=o; cap+=dp*z.count;
     const tr=document.createElement('tr');
     tr.innerHTML=`<td class="nm">${z.name}</td>
       <td><input type="number" data-i="${i}" data-k="w" value="${z.w}" min="1" ${dis?'disabled':''}></td>
       <td><input type="number" data-i="${i}" data-k="h" value="${z.h}" min="1" ${dis?'disabled':''}></td>
       <td>${a.toLocaleString()}</td>
       <td><input type="number" data-i="${i}" data-k="count" value="${z.count}" min="0" ${dis?'disabled':''}></td>
+      <td class="oinp"><input type="number" data-i="${i}" data-k="occ" value="${o}" min="0" max="${z.count}" ${dis?'disabled':''}></td>
       <td class="pinp"><input type="text" inputmode="numeric" data-i="${i}" data-k="price" value="${comma(list)}" ${dis?'disabled':''}></td>
       <td class="dinp"><input type="number" data-i="${i}" data-k="disc" value="${d}" min="0" max="100" ${dis?'disabled':''}></td>
       <td class="rec">${comma(dp)}원</td>
       <td>${won(dp*z.count)}</td>`;
     body.appendChild(tr);
   });
-  $('t3Area').textContent=area.toLocaleString()+' mm²'; $('t3Cnt').textContent=cnt+' 개';
+  $('t3Area').textContent=area.toLocaleString()+' mm²'; $('t3Cnt').textContent=cnt+' 개'; $('t3Occ').textContent=occ+' 개';
   $('t3Cap').textContent=won(cap);
-  bind3();
-  return {area,cnt,cap};
-}
-function bind3(){
-  $('sz3body').querySelectorAll('input').forEach(inp=>{
-    const k=inp.dataset.k;
-    if(k==='price'){
-      inp.addEventListener('input',()=>{ const d=digits(inp.value).replace(/\./g,''); inp.value=d?(+d).toLocaleString('ko-KR'):''; sizes3[+inp.dataset.i].price=+d||0; computeOnly(); });
-    } else {
-      inp.oninput=()=>{ let v=Math.max(0,+inp.value||0); if(k==='disc') v=Math.min(100,v); sizes3[+inp.dataset.i][k]=v; compute(); };
-    }
-  });
+  bindRows('sz3body', sizes3, 't3Occ');
 }
 
-/* ---- 활성 섹션의 유효 가격/개수 ---- */
-function effective(){
-  const rent=pNum('rent');
-  if(active==='2'){ const r=recPrices(rent,sizes2); return sizes2.map((z,i)=>({c:z.count,p:(z.price!=null?z.price:r[i]),w:z.w,h:z.h})); }
-  if(active==='3'){ const r=recPrices(rent,sizes3); return sizes3.map((z,i)=>{const list=(z.price!=null?z.price:r[i]);return {c:z.count,p:Math.round(list*(1-(z.disc||0)/100)),w:z.w,h:z.h};}); }
-  return null;
+function compute(){ clampOcc(); render2(); render3(); updateOutputs(false); }
+
+/* 슬라이더 이동 → 활성 섹션 사이즈별 점유수 동비율 자동 반영 */
+function onSlider(){
+  const arr=activeArr(); if(!arr) return;
+  const v=pNum('occ')/100;
+  arr.forEach(z=> z.occ=Math.round(z.count*v));
+  const bid=active==='2'?'sz2body':'sz3body', tot=active==='2'?'t2Occ':'t3Occ';
+  $(bid).querySelectorAll('input[data-k="occ"]').forEach(inp=>{ inp.value=arr[+inp.dataset.i].occ; });
+  $(tot).textContent=arr.reduce((s,z)=>s+z.occ,0)+' 개';
+  updateOutputs(true);
 }
 
-function compute(){ render2(); render3(); computeOnly(); }
-function computeOnly(){
+function updateOutputs(fromSlider){
   const rent=pNum('rent'), fixed=pNum('fixed'), areaM2=pNum('area');
-  const eff=effective();
-  const slider=$('occ');
-  if(!eff){
+  const arr=activeArr(), slider=$('occ');
+  if(!arr){
     ['kCnt','kCap','k70','kBep','oRev','oProfit'].forEach(id=>$(id).textContent='—');
     $('kFit').textContent='구성 미선택'; $('k70d').textContent='—'; $('kBepd').textContent='—'; $('oCost').textContent='—';
     $('srcTip').innerHTML='<span class="srcbadge st-none">② 정가 또는 ③ 할인가 구성을 체크하세요</span>';
@@ -386,15 +388,18 @@ function computeOnly(){
     slider.disabled=true; $('fill').style.width='0%'; return;
   }
   slider.disabled=false;
-  const cap=eff.reduce((s,e)=>s+e.p*e.c,0);
-  const cnt=eff.reduce((s,e)=>s+e.c,0);
-  const footM2=eff.reduce((s,e)=>s+e.w*e.h*e.c,0)/1000000;  // mm² → m²
+  const prices=activePrices(arr,rent);
+  const cap=arr.reduce((s,z,i)=>s+prices[i]*z.count,0);
+  const cnt=arr.reduce((s,z)=>s+z.count,0);
+  const totOcc=arr.reduce((s,z)=>s+Math.min(z.occ,z.count),0);
+  const occPct=cnt>0?totOcc/cnt:0;
+  const rev=arr.reduce((s,z,i)=>s+Math.min(z.occ,z.count)*prices[i],0);
+  const footM2=arr.reduce((s,z)=>s+z.w*z.h*z.count,0)/1000000;
   const rev70=cap*0.70, fixedT=rent+fixed, bep=cap>0?Math.min(1,fixedT/cap):1;
 
   $('srcTip').innerHTML = active==='2'
-    ? '<span class="srcbadge st-ok" style="color:var(--blue);background:var(--weak)">정가 기준 계산</span>'
+    ? '<span class="srcbadge" style="color:var(--blue);background:var(--weak)">정가 기준 계산</span>'
     : '<span class="srcbadge" style="color:var(--warn);background:var(--warnbg)">할인가 기준 계산</span>';
-
   $('kCnt').textContent=cnt+'개';
   const fitPct=areaM2>0?footM2/areaM2*100:0;
   $('kFit').textContent=`락커 면적 약 ${footM2.toFixed(1)}m² / 실평수 ${areaM2}m² (${fitPct.toFixed(0)}%)`;
@@ -405,19 +410,19 @@ function computeOnly(){
   else { const ratio=rent>0?rev70/rent:0; $('k70d').innerHTML=`할인가 기준 · 월세의 <b>${ratio.toFixed(2)}배</b>`; }
   $('kBep').textContent=(bep*100).toFixed(1)+'%';
   $('kBepd').textContent=`점유 ${(bep*100).toFixed(0)}%부터 흑자`;
-
   document.documentElement.style.setProperty('--bep',(bep*100)+'%');
   $('bepline').style.left=(bep*100)+'%'; $('beplab').style.left=(bep*100)+'%'; $('beplab').textContent='BEP '+(bep*100).toFixed(0)+'%';
 
-  const occ=pNum('occ')/100; $('occV').textContent=(occ*100).toFixed(0);
-  const rev=cap*occ, profit=rev-fixedT;
-  $('fill').style.width=(occ*100)+'%';
+  if(!fromSlider){ slider.value=Math.round(occPct*100); }
+  $('occV').textContent = fromSlider ? Math.round(pNum('occ')) : Math.round(occPct*100);
+  $('fill').style.width = (fromSlider?pNum('occ'):occPct*100)+'%';
+  const profit=rev-fixedT;
   $('oRev').textContent=won(rev); $('oCost').textContent='− '+won(fixedT);
   $('oProfit').textContent=(profit>=0?'+':'−')+won(Math.abs(profit));
   $('oProfit').style.color=profit>=0?'var(--blue-dark)':'var(--bad)';
   const st=$('oStatus');
-  if(occ*100<bep*100-0.5){ st.className='statusbadge st-bad'; st.textContent='적자 — 손익분기 미달'; }
-  else if(occ<0.70){ st.className='statusbadge st-warn'; st.textContent='흑자 전환 — 70% 목표까지 여력'; }
+  if(occPct*100<bep*100-0.5){ st.className='statusbadge st-bad'; st.textContent='적자 — 손익분기 미달'; }
+  else if(occPct<0.70){ st.className='statusbadge st-warn'; st.textContent='흑자 전환 — 70% 목표까지 여력'; }
   else { st.className='statusbadge st-ok'; st.textContent=active==='2'?'목표 달성 — 월세 2배 이상 매출':'목표 점유 달성'; }
 }
 
