@@ -74,6 +74,19 @@
   .recdisc span{ display:block; font-size:11px; color:var(--sub2); font-weight:600; margin-top:2px; }
   .applybtn{ margin-left:auto; font-family:inherit; font-size:13px; font-weight:800; color:#fff; background:var(--blue); border:0; border-radius:10px; padding:11px 17px; cursor:pointer; }
   .applybtn:hover{ background:var(--blue-dark); } .applybtn:disabled{ background:var(--sub2); cursor:not-allowed; }
+  .toolbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .toolbar .note{ font-size:12.5px; font-weight:600; color:var(--sub2); }
+  .periodsel{ font-size:13.5px; font-weight:700; color:var(--sub); display:flex; align-items:center; gap:8px; }
+  .periodsel select{ font-family:inherit; font-size:14px; font-weight:700; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:8px 13px; background:#fff; cursor:pointer; }
+  .periodsel select:focus{ outline:0; border-color:var(--blue); box-shadow:0 0 0 3px rgba(49,130,246,.12); }
+  .dlbtn{ font-family:inherit; font-size:13.5px; font-weight:800; color:#fff; background:var(--ok); border:0; border-radius:10px; padding:10px 16px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; }
+  .dlbtn:hover{ background:#126330; }
+  .matrix{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  .matrix th, .matrix td{ padding:10px 8px; border:1px solid #EDF0F3; text-align:center; }
+  .matrix th{ font-size:12px; font-weight:800; color:var(--sub); background:#FAFBFC; }
+  .matrix td:first-child, .matrix th:first-child{ text-align:left; font-weight:800; background:#FAFBFC; }
+  .matrix .pc{ display:inline-block; min-width:52px; font-weight:800; border-radius:7px; padding:4px 8px; }
+  .matrix tr:last-child td{ font-weight:800; }
 
   .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
   .kpi{ border:1px solid var(--line); border-radius:14px; padding:15px 16px; background:#fff; }
@@ -145,6 +158,7 @@
     table.sz{ font-size:12.5px; } table.sz input{ width:52px; }
   }
 </style>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -171,6 +185,10 @@
 
   <!-- ===== TAB 1 ===== -->
   <div class="panel on" id="t1">
+    <div class="toolbar">
+      <div class="note">입력값을 바꾸면 실시간 계산 · 현재 구성·지표를 엑셀로 내보낼 수 있습니다</div>
+      <button class="dlbtn" onclick="exportTab1()">📥 엑셀 다운로드</button>
+    </div>
     <div class="card">
       <div class="ctitle"><span class="n">1</span>기본 입력 <span class="tip">공간·비용 조건</span></div>
       <div class="ingrid">
@@ -245,11 +263,23 @@
 
   <!-- ===== TAB 2 ===== -->
   <div class="panel" id="t2">
+    <div class="toolbar">
+      <div class="periodsel">📅 조회 기간 <select id="month"></select></div>
+      <button class="dlbtn" onclick="exportTab2()">📥 엑셀 다운로드</button>
+    </div>
     <div class="sumgrid" id="sumgrid"></div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="ctitle">📊 사이즈별 × 지점별 점유율 비교 <span class="tip" id="matTip"></span></div>
+      <table class="matrix" id="matrix"></table>
+      <div class="legend" style="margin-top:11px">
+        <span><span class="dot" style="background:var(--ok)"></span>70%+ 순수익</span>
+        <span><span class="dot" style="background:#D97706"></span>50~70% 손익분기권</span>
+        <span><span class="dot" style="background:var(--bad)"></span>50% 미만 적자</span>
+        <span style="margin-left:auto">셀 색으로 지점·사이즈별 점유율을 한눈에 비교</span>
+      </div>
+    </div>
     <div class="legend">
-      <span><span class="dot" style="background:var(--ok)"></span>70%+ 순수익</span>
-      <span><span class="dot" style="background:#D97706"></span>50~70% 손익분기권</span>
-      <span><span class="dot" style="background:var(--bad)"></span>50% 미만 적자</span>
+      <span style="font-weight:800;color:var(--ink)">지점별 상세</span>
       <span style="margin-left:auto">▼ 행을 누르면 사이즈별 상세가 펼쳐집니다</span>
     </div>
     <div id="branches" style="margin-top:12px"></div>
@@ -471,52 +501,138 @@ $('reset2').onclick=(e)=>{ e.preventDefault(); sizes2.forEach(z=>z.price=null); 
 
 compute();
 
-/* ===== TAB 2 ===== */
+/* ===== TAB 2 : 지점별 락커 점유 현황 (기간별) ===== */
 const P={소:27000,중:66000,대:177000};
+const MONTHS=['2026.05','2026.06','2026.07','2026.08','2026.09','2026.10'];
+const SZN=['소형','중형','대형'];
 const branches=[
-  {name:'A지점',sizes:[{n:'소형',t:46,o:40},{n:'중형',t:28,o:24},{n:'대형',t:14,o:12}],prev:4491000},
-  {name:'B지점',sizes:[{n:'소형',t:50,o:37},{n:'중형',t:30,o:21},{n:'대형',t:12,o:8}],prev:3504000},
-  {name:'C지점',sizes:[{n:'소형',t:44,o:26},{n:'중형',t:28,o:16},{n:'대형',t:10,o:6}],prev:3090000},
-  {name:'D지점',sizes:[{n:'소형',t:40,o:37},{n:'중형',t:26,o:24},{n:'대형',t:12,o:11}],prev:4260000},
-  {name:'E지점',sizes:[{n:'소형',t:48,o:24},{n:'중형',t:30,o:13},{n:'대형',t:12,o:4}],prev:1797000},
+  {name:'A지점',sizes:[{n:'소형',total:46,occ:[36,38,39,40,41,40]},{n:'중형',total:28,occ:[22,23,23,24,24,24]},{n:'대형',total:14,occ:[10,11,11,12,12,12]}]},
+  {name:'B지점',sizes:[{n:'소형',total:50,occ:[33,34,35,36,37,37]},{n:'중형',total:30,occ:[18,19,20,20,21,21]},{n:'대형',total:12,occ:[6,7,7,8,8,8]}]},
+  {name:'C지점',sizes:[{n:'소형',total:44,occ:[30,29,28,27,27,26]},{n:'중형',total:28,occ:[19,18,18,17,17,16]},{n:'대형',total:10,occ:[8,8,7,7,7,6]}]},
+  {name:'D지점',sizes:[{n:'소형',total:40,occ:[34,35,36,36,37,37]},{n:'중형',total:26,occ:[22,22,23,23,24,24]},{n:'대형',total:12,occ:[9,10,10,11,11,11]}]},
+  {name:'E지점',sizes:[{n:'소형',total:48,occ:[14,17,19,21,23,24]},{n:'중형',total:30,occ:[7,9,10,11,12,13]},{n:'대형',total:12,occ:[2,2,3,3,4,4]}]},
 ];
 const pOf=n=>n.startsWith('소')?P.소:n.startsWith('중')?P.중:P.대;
 const occColor=p=>p>=70?'var(--ok)':p>=50?'#D97706':'var(--bad)';
 const occBg=p=>p>=70?'var(--okbg)':p>=50?'var(--warnbg)':'var(--badbg)';
-branches.forEach(b=>{ b.total=b.sizes.reduce((s,z)=>s+z.t,0); b.occ=b.sizes.reduce((s,z)=>s+z.o,0); b.pct=b.occ/b.total*100;
-  b.cur=b.sizes.reduce((s,z)=>s+z.o*pOf(z.n),0); b.sizes.forEach(z=>{z.pct=z.o/z.t*100; z.cur=z.o*pOf(z.n); z.prev=Math.round(z.cur*(0.90+(z.n.startsWith('대')?0.03:0)));}); });
+let mi = MONTHS.length-1;
+
+function sizeAt(z,m){ const o=z.occ[m]||0; return {total:z.total, occ:o, pct:z.total?o/z.total*100:0, rev:o*pOf(z.n)}; }
+function brAt(b,m){ let t=0,o=0,r=0; b.sizes.forEach(z=>{const s=sizeAt(z,m); t+=s.total;o+=s.occ;r+=s.rev;}); return {total:t,occ:o,rev:r,pct:t?o/t*100:0}; }
+function allAt(m){ let t=0,o=0,r=0; branches.forEach(b=>{const d=brAt(b,m); t+=d.total;o+=d.occ;r+=d.rev;}); return {total:t,occ:o,rev:r,pct:t?o/t*100:0}; }
+
+$('month').innerHTML = MONTHS.map((m,i)=>`<option value="${i}" ${i===mi?'selected':''}>${m}</option>`).join('');
+$('month').onchange = ()=>{ mi=+$('month').value; renderT2(); };
+
 function renderSummary(){
-  const tTotal=branches.reduce((s,b)=>s+b.total,0),tOcc=branches.reduce((s,b)=>s+b.occ,0),
-    tCur=branches.reduce((s,b)=>s+b.cur,0),tPrev=branches.reduce((s,b)=>s+b.prev,0),
-    mom=(tCur-tPrev)/tPrev*100,avg=tOcc/tTotal*100;
+  const now=allAt(mi), prev=mi>0?allAt(mi-1):null, mom=prev&&prev.rev?(now.rev-prev.rev)/prev.rev*100:0;
   const cards=[
     {l:'운영 지점',v:branches.length+'개',d:'A ~ E지점'},
-    {l:'총 락커 수',v:tTotal.toLocaleString()+'개',d:`점유 ${tOcc.toLocaleString()}개`},
-    {l:'평균 점유율',v:avg.toFixed(1)+'%',d:avg>=70?'목표 달성권':'목표(70%)까지',c:occColor(avg)},
-    {l:'금월 총 매출',v:wonM(tCur),d:won(tCur)},
-    {l:'전월 대비',v:(mom>=0?'+':'')+mom.toFixed(1)+'%',d:wonM(tPrev)+' → '+wonM(tCur),cls:mom>=0?'up':'down'},
+    {l:'총 락커 수',v:now.total.toLocaleString()+'개',d:`점유 ${now.occ.toLocaleString()}개`},
+    {l:'평균 점유율',v:now.pct.toFixed(1)+'%',d:now.pct>=70?'목표 달성권':'목표(70%)까지',c:occColor(now.pct)},
+    {l:MONTHS[mi]+' 매출',v:wonM(now.rev),d:won(now.rev)},
+    {l:'전월 대비',v:prev?((mom>=0?'+':'')+mom.toFixed(1)+'%'):'—',d:prev?`${wonM(prev.rev)} → ${wonM(now.rev)}`:'이전 데이터 없음',cls:mom>=0?'up':'down'},
   ];
   $('sumgrid').innerHTML=cards.map(c=>`<div class="scard"><div class="l">${c.l}</div><div class="v" style="${c.c?`color:${c.c}`:''}">${c.v}</div><div class="d ${c.cls||''}">${c.d}</div></div>`).join('');
 }
+function renderMatrix(){
+  $('matTip').textContent=MONTHS[mi]+' 기준';
+  const cell=p=>`<span class="pc" style="color:${occColor(p)};background:${occBg(p)}">${p.toFixed(0)}%</span>`;
+  const head=`<thead><tr><th>지점</th>${SZN.map(s=>`<th>${s}</th>`).join('')}<th>전체</th></tr></thead>`;
+  let rows=branches.map(b=>{
+    const tds=b.sizes.map(z=>`<td>${cell(sizeAt(z,mi).pct)}</td>`).join('');
+    return `<tr><td>${b.name}</td>${tds}<td>${cell(brAt(b,mi).pct)}</td></tr>`;
+  }).join('');
+  const colTot=SZN.map(sn=>{let t=0,o=0;branches.forEach(b=>{const z=b.sizes.find(x=>x.n===sn);t+=z.total;o+=z.occ[mi];});return `<td>${cell(t?o/t*100:0)}</td>`;}).join('');
+  rows+=`<tr><td>전체 평균</td>${colTot}<td>${cell(allAt(mi).pct)}</td></tr>`;
+  $('matrix').innerHTML=head+`<tbody>${rows}</tbody>`;
+}
 function renderBranches(){
-  $('branches').innerHTML=branches.map((b,i)=>{
-    const rows=b.sizes.map(z=>{const dm=(z.cur-z.prev)/z.prev*100;
-      return `<tr><td>${z.n} <span style="color:var(--sub2);font-weight:600">(${comma(pOf(z.n))}원)</span></td><td>${z.t}개</td>
-        <td><span class="occpill" style="color:${occColor(z.pct)};background:${occBg(z.pct)}">${z.o}개 · ${z.pct.toFixed(0)}%</span></td>
-        <td>${won(z.prev)}</td><td>${won(z.cur)}</td><td class="${dm>=0?'up':'down'}" style="font-weight:800">${dm>=0?'+':''}${dm.toFixed(0)}%</td></tr>`;}).join('');
-    const bm=(b.cur-b.prev)/b.prev*100;
+  $('branches').innerHTML=branches.map(b=>{
+    const now=brAt(b,mi), prev=mi>0?brAt(b,mi-1):null, bm=prev&&prev.rev?(now.rev-prev.rev)/prev.rev*100:0;
+    const rows=b.sizes.map(z=>{
+      const s=sizeAt(z,mi), sp=mi>0?sizeAt(z,mi-1):null, dm=sp&&sp.rev?(s.rev-sp.rev)/sp.rev*100:0;
+      return `<tr><td>${z.n} <span style="color:var(--sub2);font-weight:600">(${comma(pOf(z.n))}원)</span></td><td>${z.total}개</td>
+        <td><span class="occpill" style="color:${occColor(s.pct)};background:${occBg(s.pct)}">${s.occ}개 · ${s.pct.toFixed(0)}%</span></td>
+        <td>${sp?won(sp.rev):'—'}</td><td>${won(s.rev)}</td><td class="${dm>=0?'up':'down'}" style="font-weight:800">${sp?(dm>=0?'+':'')+dm.toFixed(0)+'%':'—'}</td></tr>`;
+    }).join('');
     return `<div class="br"><div class="brhead">
-      <div class="bn"><span class="occpill" style="color:${occColor(b.pct)};background:${occBg(b.pct)}">${b.pct.toFixed(0)}%</span>${b.name}</div>
-      <div class="cell"><div class="cl">락커 수</div><div class="cv">${b.total}개</div></div>
-      <div class="cell"><div class="cl">점유</div><div class="cv" style="color:${occColor(b.pct)}">${b.occ}개 · ${b.pct.toFixed(0)}%</div></div>
-      <div class="cell hideM"><div class="cl">전월 매출</div><div class="cv">${wonM(b.prev)}</div></div>
-      <div class="cell"><div class="cl">금월 매출</div><div class="cv">${wonM(b.cur)} <span class="${bm>=0?'up':'down'}" style="font-size:11px">(${bm>=0?'+':''}${bm.toFixed(0)}%)</span></div></div>
+      <div class="bn"><span class="occpill" style="color:${occColor(now.pct)};background:${occBg(now.pct)}">${now.pct.toFixed(0)}%</span>${b.name}</div>
+      <div class="cell"><div class="cl">락커 수</div><div class="cv">${now.total}개</div></div>
+      <div class="cell"><div class="cl">점유</div><div class="cv" style="color:${occColor(now.pct)}">${now.occ}개 · ${now.pct.toFixed(0)}%</div></div>
+      <div class="cell hideM"><div class="cl">전월 매출</div><div class="cv">${prev?wonM(prev.rev):'—'}</div></div>
+      <div class="cell"><div class="cl">${MONTHS[mi]} 매출</div><div class="cv">${wonM(now.rev)} <span class="${bm>=0?'up':'down'}" style="font-size:11px">${prev?`(${bm>=0?'+':''}${bm.toFixed(0)}%)`:''}</span></div></div>
       <div class="arrow">▼</div></div>
-      <div class="brbody"><table class="det"><thead><tr><th>사이즈 (단가)</th><th>락커 수</th><th>점유 (수·%)</th><th>전월 매출</th><th>금월 매출</th><th>증감</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+      <div class="brbody"><table class="det"><thead><tr><th>사이즈 (단가)</th><th>락커 수</th><th>점유 (수·%)</th><th>전월 매출</th><th>${MONTHS[mi]} 매출</th><th>증감</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   }).join('');
   $('branches').querySelectorAll('.brhead').forEach(h=>h.onclick=()=>h.parentElement.classList.toggle('open'));
 }
-renderSummary(); renderBranches();
+function renderT2(){ renderSummary(); renderMatrix(); renderBranches(); }
+renderT2();
+
+/* ===== 엑셀 다운로드 ===== */
+function styleMoney(ws){ // 큰 숫자 셀에 천단위 포맷
+  const range=XLSX.utils.decode_range(ws['!ref']);
+  for(let R=range.s.r;R<=range.e.r;R++) for(let C=range.s.c;C<=range.e.c;C++){
+    const a=XLSX.utils.encode_cell({r:R,c:C}), cell=ws[a];
+    if(cell && cell.t==='n' && Math.abs(cell.v)>=1000){ cell.z='#,##0'; }
+  }
+}
+function sheet(wb,name,aoa,cols){ const ws=XLSX.utils.aoa_to_sheet(aoa); if(cols) ws['!cols']=cols.map(w=>({wch:w})); styleMoney(ws); XLSX.utils.book_append_sheet(wb,ws,name); }
+
+function exportTab1(){
+  const arr=activeArr();
+  if(!arr){ alert('② 정가 또는 ③ 할인가 구성을 먼저 선택하세요.'); return; }
+  const rent=pNum('rent'),fixed=pNum('fixed'),area=pNum('area'),label=active==='2'?'정가':'할인가';
+  const prices=activePrices(arr,rent), recs=recPrices(rent,sizes3);
+  const aoa=[[`셀프스토리지 락커 비용 측정 — ${label} 기준`],[],
+    ['실평수(m²)',area,'월세(원)',rent,'월 고정비(원)',fixed],[]];
+  let cols;
+  if(active==='2'){
+    aoa.push(['사이즈','가로(mm)','세로(mm)','면적(mm²)','개수','점유 라커 수','점유율(%)','적용 단가(원/월)','100% 매출','점유 매출']);
+    arr.forEach((z,i)=>{const o=Math.min(z.occ,z.count);aoa.push([z.name,z.w,z.h,z.w*z.h,z.count,o,+(z.count?o/z.count*100:0).toFixed(1),prices[i],prices[i]*z.count,prices[i]*o]);});
+    cols=[9,9,9,12,8,11,9,15,14,14];
+  } else {
+    aoa.push(['사이즈','가로(mm)','세로(mm)','면적(mm²)','개수','점유 라커 수','점유율(%)','정가(원)','할인율(%)','할인 적용가','100% 매출','점유 매출']);
+    arr.forEach((z,i)=>{const o=Math.min(z.occ,z.count),list=z.price!=null?z.price:recs[i];aoa.push([z.name,z.w,z.h,z.w*z.h,z.count,o,+(z.count?o/z.count*100:0).toFixed(1),list,z.disc||0,prices[i],prices[i]*z.count,prices[i]*o]);});
+    cols=[9,9,9,12,8,11,9,13,9,13,14,14];
+  }
+  const cap=arr.reduce((s,z,i)=>s+prices[i]*z.count,0), totC=arr.reduce((s,z)=>s+z.count,0),
+    totO=arr.reduce((s,z)=>s+Math.min(z.occ,z.count),0), rev=arr.reduce((s,z,i)=>s+Math.min(z.occ,z.count)*prices[i],0);
+  aoa.push([],['핵심 지표'],
+    ['총 락커 수',totC,'점유 라커 수',totO,'현재 점유율(%)',+(totO/totC*100).toFixed(1)],
+    ['100% 점유 매출',cap,'70% 점유 매출(설계목표)',Math.round(cap*0.7),'손익분기 점유율(%)',+((rent+fixed)/cap*100).toFixed(1)],
+    ['현재 월 매출',rev,'월 순이익',rev-(rent+fixed)]);
+  const wb=XLSX.utils.book_new(); sheet(wb,'락커 비용 측정',aoa,cols);
+  XLSX.writeFile(wb,`락커_비용_측정_${label}.xlsx`);
+}
+
+function exportTab2(){
+  const wb=XLSX.utils.book_new(), m=MONTHS[mi];
+  // 1) 지점 요약
+  const s1=[[`지점별 락커 점유 현황 — ${m}`],[],['지점','총 락커','점유 라커','점유율(%)','전월 매출','당월 매출','전월 대비(%)']];
+  branches.forEach(b=>{const now=brAt(b,mi),prev=mi>0?brAt(b,mi-1):null;s1.push([b.name,now.total,now.occ,+now.pct.toFixed(1),prev?prev.rev:0,now.rev,prev&&prev.rev?+((now.rev-prev.rev)/prev.rev*100).toFixed(1):0]);});
+  const a=allAt(mi),ap=mi>0?allAt(mi-1):null;
+  s1.push(['전체',a.total,a.occ,+a.pct.toFixed(1),ap?ap.rev:0,a.rev,ap&&ap.rev?+((a.rev-ap.rev)/ap.rev*100).toFixed(1):0]);
+  sheet(wb,`지점 요약(${m})`,s1,[12,9,10,10,14,14,12]);
+  // 2) 사이즈별 상세 (선택 월)
+  const s2=[[`사이즈별 점유 상세 — ${m}`],[],['지점','사이즈','단가(원)','락커 수','점유 라커','점유율(%)','당월 매출']];
+  branches.forEach(b=>b.sizes.forEach(z=>{const s=sizeAt(z,mi);s2.push([b.name,z.n,pOf(z.n),s.total,s.occ,+s.pct.toFixed(1),s.rev]);}));
+  sheet(wb,`사이즈별 상세(${m})`,s2,[12,9,12,9,10,10,14]);
+  // 3) 사이즈별 × 지점별 점유율 비교 매트릭스
+  const s3=[[`사이즈별 × 지점별 점유율(%) — ${m}`],[],['지점',...SZN,'전체']];
+  branches.forEach(b=>{s3.push([b.name,...b.sizes.map(z=>+sizeAt(z,mi).pct.toFixed(1)),+brAt(b,mi).pct.toFixed(1)]);});
+  s3.push(['전체 평균',...SZN.map(sn=>{let t=0,o=0;branches.forEach(b=>{const z=b.sizes.find(x=>x.n===sn);t+=z.total;o+=z.occ[mi];});return +(t?o/t*100:0).toFixed(1);}),+allAt(mi).pct.toFixed(1)]);
+  sheet(wb,'점유율 비교 매트릭스',s3,[12,9,9,9,9]);
+  // 4) 월별 점유율 추이 (전 기간)
+  const s4=[['월별 점유율(%) 추이'],[],['월',...branches.map(b=>b.name),'전체']];
+  MONTHS.forEach((mm,k)=>{s4.push([mm,...branches.map(b=>+brAt(b,k).pct.toFixed(1)),+allAt(k).pct.toFixed(1)]);});
+  // 월별 매출 추이도
+  s4.push([],['월별 매출(원) 추이'],['월',...branches.map(b=>b.name),'전체']);
+  MONTHS.forEach((mm,k)=>{s4.push([mm,...branches.map(b=>brAt(b,k).rev),allAt(k).rev]);});
+  sheet(wb,'월별 추이',s4,[9,11,11,11,11,11,11]);
+  XLSX.writeFile(wb,`지점별_락커_점유현황_${m}.xlsx`);
+}
 </script>
 </body>
 </html>
